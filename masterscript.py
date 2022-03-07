@@ -9,6 +9,7 @@ import pandas as pd
 
 import parameter_tester
 import parse_raw_data
+import optimize_abc
 
 pathToParameterFile = sys.argv[1]
 parameters = yaml.safe_load(open(pathToParameterFile)) 
@@ -21,5 +22,10 @@ errorCount, warningCount = ParameterTester.doTests()
 
 # If there were no errors, run the script.
 if errorCount == 0:
-	Parser = parse_raw_data.RawDataParser(parameters)
-	Parser.doParse()
+	# Parser = parse_raw_data.RawDataParser(parameters)
+	# Parser.doParse()
+
+	OptABC = optimize_abc.OptimizeABC(parameters)
+	OptABC.doOptimizeABC()
+
+

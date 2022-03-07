@@ -23,3 +23,8 @@ parse_raw_data:
   footer_length: 12
   header_length: 0
 
+optimize_abc:
+  abc_filename: "abc_h=1e-4.csv"
+  h: 0.0001
+
+
