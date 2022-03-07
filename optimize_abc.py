@@ -213,7 +213,7 @@ class OptimizeABC(object):
             noise = np.std(i[t<t_i])*np.ones(len(xdata))
 
             # Fix the charge state for the curve_fit
-            f = lambda t, a, b, c: self.fitting_function(t,a,b,c,charge_state)
+            f = lambda t, a, b, c: self.fitting_function(t,a,b,c,charge_state=charge_state)
 
 
 
@@ -232,7 +232,7 @@ class OptimizeABC(object):
                                   bounds=bnds)  
             
             # Calculate the chi2
-            chi2 = np.sum( np.square( (ydata - self.fitting_function(xdata, *popt))/noise ) )
+            chi2 = np.sum( np.square( (ydata - f(xdata, *popt))/noise ) )
             
             # Calculate the (reduced) chi2
             chi2_reduced = chi2 / (len(ydata)-3)
