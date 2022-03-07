@@ -1,0 +1,25 @@
+
+working_directory: "./"
+results_directory: "./test/results/"
+injected_species: "39K"
+measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
+
+parse_raw_data:
+  path_to_raw_data: "/home/miha/Work/codes/ct-analyzer/test/JA_2020-06-29/transient_data/"
+  one_plus_naming_convention: "2020 06 29 - {} pulse 1+.txt"
+  n_plus_naming_convention: "2020 06 29 - {} courant 1+.txt"
+  filename_variables: [15 09 16,
+15 04 09,
+14 59 16,
+14 52 47,
+14 45 20,
+14 39 01,
+14 33 22,
+14 10 00,
+14 18 44,
+14 23 20]
+  conversion_factor: 0.0000011754
+  separator: '\t'
+  footer_length: 12
+  header_length: 0
+
