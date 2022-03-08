@@ -1,6 +1,12 @@
 """
 Example:
     >>> python3 masterScript.py parameters.yaml
+
+TODO! 
+- Use the time library to print time elapsed for each sub-routine.
+- n&E optimization
+- plotting (might want to create a separate script for this. 
+Will avoid clutter, and enable more features.)
 """
 
 import sys

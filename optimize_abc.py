@@ -102,6 +102,8 @@ class OptimizeABC(object):
         super(OptimizeABC, self).__init__()
         self.parameters = parameters
 
+        self.h = float(parameters["optimize_abc"]["h"])
+        print("RK stepsize:", self.h, " s. (type: ", type(self.h), ")")
 
         # Generate paths to the parsed n+ data files
         # to use in interpolation.
@@ -200,7 +202,7 @@ class OptimizeABC(object):
             y0=0, 
             tf=t_f, 
             f=RHS, 
-            h=self.parameters["optimize_abc"]["h"],
+            h=self.h,
             a=a,
             b=b,
             c=c,
@@ -277,12 +279,12 @@ class OptimizeABC(object):
             fit_dataframe["i"] = Y
             
             # Output the fit data to .csv
-            h = self.parameters["optimize_abc"]["h"]
-            outputFileName = "out_fit_h{:.0e}_q{}+.csv".format(h, str(charge_state))
+            # h = self.parameters["optimize_abc"]["h"]
+            outputFileName = "out_fit_h{:.0e}_q{}+.csv".format(self.h, str(charge_state))
             fit_dataframe.to_csv(self.parameters["results_directory"]  + outputFileName)
 
             # Make a plot of the final fit
-            outName = "fig_fit_h{:.0e}_q{}+".format(h, str(charge_state))     
+            outName = "fig_fit_h{:.0e}_q{}+".format(self.h, str(charge_state))     
             fig, ax = plt.subplots()
             ax.plot(t*1e3,i,c="k", label="Measured")
             ax.plot(T*1e3,Y,c="r", ls="--", label="Fitted")
