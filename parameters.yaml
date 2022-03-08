@@ -1,3 +1,5 @@
+"""
+"""
 
 working_directory: "./"
 results_directory: "./test/results/"
@@ -28,3 +30,5 @@ optimize_abc:
   h: 1E-3 # RK4 method stepsize. Units of s.
 
 
+optimize_nE:
+  rate_coefficient_method: "MB"
