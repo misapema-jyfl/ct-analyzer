@@ -3,7 +3,7 @@
 
 working_directory: "./"
 results_directory: "./test/results/"
-injected_species: "39K"
+injected_species: "k" # Lower case! Element abbreviation (e.g. Potassium -> "k", Sodium -> "na")
 measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
 
 parse_raw_data:
