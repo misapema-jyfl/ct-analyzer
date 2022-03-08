@@ -24,7 +24,6 @@ class RawDataParser(object):
         Loads a data file into a pandas dataframe.
         """
         path = self.parameters["parse_raw_data"]["path_to_raw_data"] + filename
-        print(path)
 
         try:
             df = pd.read_csv(path, 

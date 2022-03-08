@@ -4,7 +4,20 @@ from scipy import interpolate
 from scipy.optimize import curve_fit
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
 
+# Set the following loglevel
+# to suppress unnecessary warnings
+# from saving transparent artists as .eps
+matplotlib.set_loglevel("critical")
+
+# Adjust the plot font size.
+font = {"family":"normal",
+        "weight":"normal",
+        "size": 15}
+
+matplotlib.rc("font", **font)
 
 def rk4(t0, y0, tf, f, h, **kwargs):
     '''
@@ -108,8 +121,13 @@ class OptimizeABC(object):
         in parse_raw_data.py.
         Generate here the list of filepaths
         to the parsed data files.
+        These paths will be used by the script
+        to locate said data files.
+
         The data files themselves are created
-        by the parse_raw_data.py -routine.
+        by the parse_raw_data.py-routine. 
+        The naming conventions here and there
+        must, therefore, match.
         """
         element = self.parameters["injected_species"].lower()
         nPlusOutConvention = "{}{}+.csv"
@@ -168,7 +186,9 @@ class OptimizeABC(object):
 
 
     def fitting_function(self, t, a, b, c, charge_state):
-    
+        """
+        """
+
         # Choose the interpolate objects (q-1 and q+1 signals)
         I_lo = self.interpolateObjectDict[charge_state-1]
         I_hi = self.interpolateObjectDict[charge_state+1]
@@ -194,19 +214,24 @@ class OptimizeABC(object):
 
 
     def doOptimizeABC(self):
+        """
+        """
+
+        # Create a dataframe for the output
+        result_dataframe = pd.DataFrame()
 
         # Perform the optimization via the RK4-method
         # on all possible charge states.
         for charge_state in self.parameters["measured_charge_states"][1:-1]:
 
             # Print status
-            print("Running abc optimization for charge state {}".format(str(charge_state)))
+            print("Running abc optimization for charge state {}+".format(str(charge_state)))
 
-            t_i, t_f = self.determine_interpolation_limits(charge_state)
-
+            
             # Get the data to fit to
             data = pd.read_csv(self.nPlusFilepathDict[charge_state])
             t, i = data["t"], data["i"]
+            t_i, t_f = self.determine_interpolation_limits(charge_state)
             xdata, ydata = t[(t>t_i)&(t<t_f)], i[(t>t_i)&(t<t_f)]
 
             # Determine the noise level
@@ -214,8 +239,6 @@ class OptimizeABC(object):
 
             # Fix the charge state for the curve_fit
             f = lambda t, a, b, c: self.fitting_function(t,a,b,c,charge_state=charge_state)
-
-
 
             # Do the curve fit
             lo_bnds = [0,0,0]
@@ -237,7 +260,50 @@ class OptimizeABC(object):
             # Calculate the (reduced) chi2
             chi2_reduced = chi2 / (len(ydata)-3)
 
-            print("Found a, b, c = ", popt)
+            # Unpack the result to lists
+            [a, b, c] = popt
+            [da, db, dc] = np.sqrt(np.diag(pcov))
+
+            # Add lists to result_dataframe
+            result_dataframe[charge_state]=[a,b,c,da,db,dc,chi2_reduced]
+
+
+            # Save the fit in a DataFrame
+            T = np.linspace(t_i, t_f, num=len(t))
+            Y = f(t=T, a=a, b=b, c=c)
+
+            fit_dataframe = pd.DataFrame()
+            fit_dataframe["t"] = T
+            fit_dataframe["i"] = Y
+            
+            # Output the fit data to .csv
+            h = self.parameters["optimize_abc"]["h"]
+            outputFileName = "out_fit_h{:.0e}_q{}+.csv".format(h, str(charge_state))
+            fit_dataframe.to_csv(self.parameters["results_directory"]  + outputFileName)
+
+            # Make a plot of the final fit
+            outName = "fig_fit_h{:.0e}_q{}+".format(h, str(charge_state))     
+            fig, ax = plt.subplots()
+            ax.plot(t*1e3,i,c="k", label="Measured")
+            ax.plot(T*1e3,Y,c="r", ls="--", label="Fitted")
+            ax.set_xlabel("Time (ms)")
+            ax.set_ylabel(r"Current ($e$A)")
+            ax.set_xlim(left=0)
+            ax.set_ylim(bottom=0)
+            ax.legend()
+            fig.tight_layout()    
+            fig.savefig(self.parameters["results_directory"] + outName + ".eps", format="eps", transparent=False)
+            fig.savefig(self.parameters["results_directory"] + outName + ".png", format="png", dpi=300)
+            plt.close(fig)
+
+
+
+        result_dataframe.index=["a", "b", "c", "da", "db", "dc", "chi2"]
+        result_dataframe.to_csv(self.parameters["results_directory"] + "abc.csv")
+
+
+
+            
 
 
 

@@ -22,10 +22,26 @@ errorCount, warningCount = ParameterTester.doTests()
 
 # If there were no errors, run the script.
 if errorCount == 0:
-	# Parser = parse_raw_data.RawDataParser(parameters)
-	# Parser.doParse()
 
-	OptABC = optimize_abc.OptimizeABC(parameters)
-	OptABC.doOptimizeABC()
+	# Parse the raw data
+	try:
+		print("Parsing raw data...")
+		Parser = parse_raw_data.RawDataParser(parameters)
+		Parser.doParse()
+		print("Finished parsing!\n")
+	except:
+		print("Failed to parse raw data.")
+		sys.exit()
+
+	# Run the abc optimization
+	try:
+		print("Beginning abc optimization...")
+		OptABC = optimize_abc.OptimizeABC(parameters)
+		OptABC.doOptimizeABC()
+		print("Finished abc optimization!\n")
+	except:
+		print("Failed to optimize the abc parameters.")
+		sys.exit()
+	
 
 
