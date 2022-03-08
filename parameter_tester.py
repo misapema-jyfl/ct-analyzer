@@ -21,6 +21,8 @@ class ParameterTester(object):
 		Check that integer values are given where they are required.
 		Check that lists are lists.
 		Check that injected species is lower()
+		Make sure that rolling average is not negative, or greater than 10(0).
+		  Might want to warn user if it is bigger than 5.
 		"""
 		errorCount = 0
 		warningCount = 0

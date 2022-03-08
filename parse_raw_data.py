@@ -46,6 +46,8 @@ class RawDataParser(object):
     def parseData(self, charge_state, one_plus_filename, n_plus_filename):
         """
         Parse a given pair of data.
+        
+        0. The optional rolling mean is done on the data.
 
         1. The one plus signal (from: one_plus_filename.csv)
         is used to set t=0 for the n+ signal (from: n_plus_filename)
@@ -61,6 +63,12 @@ class RawDataParser(object):
         dfOne = self.loadData(one_plus_filename)
         dfN = self.loadData(n_plus_filename)
         
+        # Advanced setting: rolling average.
+        if not self.parameters["parse_raw_data"]["rolling_average"] == 0:
+            w = self.parameters["parse_raw_data"]["rolling_average"]/100
+            dfOne = dfOne.rolling(window=int(w*len(dfOne)), min_periods=1, closed="right").mean()
+            dfN = dfN.rolling(window=int(w*len(dfOne)), min_periods=1, closed="right").mean()
+
         # Get the time series data
         t_1, i_1 = dfOne["t"], dfOne["i"]
         t_n, i_n = dfN["t"], dfN["i"]*self.parameters["parse_raw_data"]["conversion_factor"] # Conversion to A
@@ -121,7 +129,7 @@ class RawDataParser(object):
 
 
         # Check that figures have a directory to save to
-        s = (self.parameters["results_directory"], "input_data_plots/")
+        s = (self.parameters["results_directory"], "parsed_data_plots/")
         figuresDirectory = "".join(s)
         if not os.path.isdir(figuresDirectory):
             os.mkdir(figuresDirectory)
