@@ -31,8 +31,16 @@ class ParameterTester(object):
 		# TODO! Run sub-routines.
 		# Check all directories.
 		# ...
+		print("TODO! Check that all directories are actual directories.")
+		print("TODO! Check that integer values are given where they are required.")
+		print("TODO! Check that lists are lists.")
+		print("TODO! Check that floats are floats.")
+		print("TODO! Check that doubles are doubles.")
+		print("TODO! Check that injected species is lower()")
+		print("TODO! Make sure that rolling average is not negative, or greater than 10(0).")
 		
 		print("Process exited with {} errors and {} warnings.\n"\
 			.format(errorCount,warningCount))
+
 
 		return errorCount, warningCount

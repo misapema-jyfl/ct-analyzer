@@ -22,7 +22,7 @@ parse_raw_data:
   separator: '\t'
   footer_length: 12
   header_length: 0
-  rolling_average: 0 # Expressed as % of the data column length. Use 0 to ignore.
+  rolling_average: 0 # Expressed as % of the data column length. Use value 0 to ignore.
 
 optimize_abc:
   h: 0.001
