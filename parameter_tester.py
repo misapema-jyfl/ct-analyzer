@@ -4,6 +4,12 @@ masterscript are valid.
 
 The parameters given to ParameterTester are the 
 ones specified by the .yaml file.
+
+TÒDO!
+- Create a separate script which 
+runs the parameter tests by calling this 
+script, with the desired .yaml file as 
+its input. 
 """
 
 import os

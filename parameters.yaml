@@ -1,12 +1,10 @@
-"""
-"""
-
 working_directory: "./"
 results_directory: "./test/results/"
 injected_species: "k" # Lower case! Element abbreviation (e.g. Potassium -> "k", Sodium -> "na")
 measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
 
 parse_raw_data:
+  do: 0
   path_to_raw_data: "/home/miha/Work/codes/ct-analyzer/test/JA_2020-06-29/transient_data/"
   one_plus_naming_convention: "2020 06 29 - {} pulse 1+.txt"
   n_plus_naming_convention: "2020 06 29 - {} courant 1+.txt"
@@ -27,8 +25,21 @@ parse_raw_data:
   rolling_average: 3 # Expressed as % of the data column length. Use value 0 to ignore.
 
 optimize_abc:
+  do: 0
   h: 1E-3 # RK4 method stepsize. Units of s.
 
-
 optimize_nE:
+  do: 1
+  # Available rate coefficient evaluation methods:
+  # - 'MB' -> interpolation functions based on a Maxwell-Boltzmann EED
+  
+  # For electron density limits, pass the tuple ('cutoff', FREQUENCY)
+  # where FREQUENCY is the ion source microwave frequency in units of Hz.
+  # The code will then calculate the cutoff frequency and use that
+  # as the upper limit.
   rate_coefficient_method: "MB"
+  number_of_MC_iterations: 10
+  number_of_density_iterations: 1000
+  average_energy_limits: [10,9999] # Limits of the average energy of the EED [lower, higher]. Units of eV.
+  electron_density_limits: [1e11, ['cutoff', 14.5E9]] # Limits of the electron density [lower, higher]. Units of 1/cm3.
+  max_workers: -1 # Use -1 if you want to allow the use of all cpu's
