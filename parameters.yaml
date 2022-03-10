@@ -50,4 +50,6 @@ plotting:
   average_energy_limits: [0,0] # Set [lower, upper] limits of (n,E)-points to consider.
   electron_density_limits: [0,0] # Use [0,0] for default limits.
   penalty_function_upper_limit: 1E-6
-  
+  advanced:
+    override_charge_states: 1
+    charge_states: [5,6,7,8,10]

@@ -101,7 +101,13 @@ class Plotting(object):
             )
         s = (self.parameters["results_directory"], filename)
         path = "".join(s)
-        df = pd.read_csv(path)
+
+        try:
+            df = pd.read_csv(path)
+        except:
+            print("Couldn't locate solution set file.")
+            print("Filepath: {}".format(path))
+
 
         #2.
         return df
@@ -281,6 +287,20 @@ class Plotting(object):
             
 
 
+    def plot_solution_sets(self, charge_states):
+        """
+        Plot the solution set heatmaps for 
+        all selected charge states.
+        """
+        for charge_state in charge_states:
+            print("Plotting solution set for charge state {}+...".format(str(charge_state)))
+            try:
+                self.plot_solution_set_heatmap(charge_state)
+            except:
+                print("Failed to plot for {}+".format(str(charge_state)))
+                print("Check that file exists.")
+                print("Continuing...")
+
 
     def get_number_of_solutions(self, charge_state, F_upper_limits):
         """
@@ -304,14 +324,14 @@ class Plotting(object):
 
 
 
-    def plot_number_of_solutions(self, F_upper_limits):
+    def plot_number_of_solutions(self, F_upper_limits, charge_states):
         """
         Plot the number of solutions in a given solution set
         for each charge state into the same figure.
         """
         fig, ax = plt.subplots()
         max_number_of_solutions = 1
-        for charge_state in self.parameters["measured_charge_states"][2:-2]:
+        for charge_state in charge_states:
             lbl = "{}+".format(charge_state)
             number_of_solutions = self.get_number_of_solutions(charge_state, F_upper_limits)
             ax.scatter(F_upper_limits, number_of_solutions, label=lbl)
@@ -425,13 +445,11 @@ class Plotting(object):
         return x_lo, median, x_hi
 
 
-    def plot_characteristic_times(self):
+    def plot_characteristic_times(self, charge_states):
         """
         Plot the characteristic times as a function
         of the charge state.
         """
-
-        charge_states = self.parameters["measured_charge_states"][2:-2]
         
         keys = ["confinement_time", "ionization_time", "charge_exchange_time"]
 
@@ -520,8 +538,10 @@ class Plotting(object):
                 label=lbl,
                 markersize=13
                 )        
+            N = charge_states[-1] - charge_states[0] + 1
+            xticks = [int(x) for x in np.linspace(charge_states[0], charge_states[-1], N)]
             ax.set_xlabel("Charge state")
-            ax.set_xticks(charge_states)
+            ax.set_xticks(xticks)
             ax.set_ylabel(ylabel)
             ax.set_ylim(bottom=0)
             ax.set_xlim(left=charge_states[0]-1, right=charge_states[-1]+1)
@@ -548,22 +568,20 @@ class Plotting(object):
         for each available charge state.
         """
 
+        if not self.parameters["plotting"]["advanced"]["override_charge_states"]:
+            charge_states = self.parameters["measured_charge_states"][2:-2]
+        else:
+            charge_states = self.parameters["plotting"]["advanced"]["charge_states"]
+
         print("Plotting the number of solutions...")
         F_upper_limits = [1E-11, 1E-10, 1E-9, 1E-8, 1E-7, 1E-6, 1E-5, 1E-4, 1E-3]
         F_upper_limits = [np.float(F) for F in F_upper_limits]
-        self.plot_number_of_solutions(F_upper_limits)
+        self.plot_number_of_solutions(F_upper_limits, charge_states)
 
-        for charge_state in self.parameters["measured_charge_states"][2:-2]:
-            print("Plotting solution set for charge state {}+...".format(str(charge_state)))
-            try:
-                self.plot_solution_set_heatmap(charge_state)
-            except:
-                print("Failed to plot for {}+".format(str(charge_state)))
-                print("Check that file exists.")
-                print("Continuing...")
+        self.plot_solution_sets(charge_states)
 
         print("Plotting characteristic values...")
-        self.plot_characteristic_times()
+        self.plot_characteristic_times(charge_states)
 
 
 
