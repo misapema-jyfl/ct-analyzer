@@ -29,7 +29,7 @@ optimize_abc:
   h: 1E-3 # RK4 method stepsize. Units of s.
 
 optimize_nE:
-  do: 1
+  do: 0
   # Available rate coefficient evaluation methods:
   # - 'MB' -> interpolation functions based on a Maxwell-Boltzmann EED
   
@@ -43,3 +43,11 @@ optimize_nE:
   average_energy_limits: [10,9999] # Limits of the average energy of the EED [lower, higher]. Units of eV.
   electron_density_limits: [1e11, ['cutoff', 14.5E9]] # Limits of the electron density [lower, higher]. Units of 1/cm3.
   max_workers: -1 # Use -1 if you want to allow the use of all cpu's
+
+plotting:
+  do: 1
+  confidence: 0.341
+  average_energy_limits: [0,0] # Set [lower, upper] limits of (n,E)-points to consider.
+  electron_density_limits: [0,0] # Use [0,0] for default limits.
+  penalty_function_upper_limit: 1E-6
+  
