@@ -16,6 +16,7 @@ import parameter_tester
 import parse_raw_data
 import optimize_abc
 import optimize_nE
+import plot_results
 
 
 # Load the parameters from the .yaml file
@@ -63,19 +64,26 @@ if errorCount == 0:
 			sys.exit()
 
 	# Run the (n,E) optimization
+	# ----------------------------
 	if parameters["optimize_nE"]["do"]:
-		# try:
-		# 	print("Beginning (n,E)-optimization...")
-		# 	OptNE = optimize_nE.OptimizeNE(parameters)
-		# 	OptNE.doOptimizeNE()
-		# 	print("Finished (n,E)-optimization!\n")
-		# except:
-		# 	print("Failed to optimize (n,E).")
-		# 	print("Exiting...")
-		# 	sys.exit()
-		print("Beginning (n,E)-optimization...\n")
-		OptNE = optimize_nE.OptimizeNE(parameters)
-		OptNE.doOptimizeNE()
-		print("\nFinished (n,E)-optimization!\n")
+		try:
+			print("Beginning (n,E)-optimization...")
+			OptNE = optimize_nE.OptimizeNE(parameters)
+			OptNE.doOptimizeNE()
+			print("Finished (n,E)-optimization!\n")
+		except:
+			print("Failed to optimize (n,E).")
+			print("Check parameters / necessary files.")
+			print("Exiting...")
+			sys.exit()
+	# ----------------------------
 
-	print("Thank you for flying with us!")
+
+	# Run the plotting sub-routine
+	# ----------------------------
+	if parameters["plotting"]["do"]:
+		Plot = plot_results.Plotting(parameters)
+		Plot.doPlotting()
+	# ----------------------------
+
+	print("Finished!")
