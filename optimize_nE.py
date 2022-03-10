@@ -51,7 +51,7 @@ class OptimizeNE(object):
             s = (self.parameters["working_directory"],
                 "rate_coefficient_data/",
                 self.parameters["injected_species"],
-                "/interpMB_",
+                "/MB_",
                 self.parameters["injected_species"],
                 "_",
                 str(charge_state),
