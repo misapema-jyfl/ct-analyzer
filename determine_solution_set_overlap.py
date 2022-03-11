@@ -75,7 +75,7 @@ def normalize_array(array):
 	maximum_value, minimum_value = determine_max_and_min(array)
 	for i in range(len(array)):
 		for j in range(len(array)):
-			array[i][j] = array[i][j]/(maximum_value-minimum_value)
+			array[i][j] = array[i][j]/maximum_value
 
 	return array
 
