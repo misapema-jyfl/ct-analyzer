@@ -7,11 +7,18 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 from matplotlib import cm
+import matplotlib
 
+# Set font for plots
+font = {'family' : 'sans-serif',
+        'weight' : 'normal',
+        'size'   : 15}
+
+matplotlib.rc('font', **font)
 
 
 # Get the limits TODO! From parameters!
-limits = {"F":1E-9, "n":[1E10, 1E13], "E":[10,10000]}
+limits = {"F":1E-9, "n":[1E11, 2.61E12], "E":[10,9999]}
 E_limits = limits["E"]
 n_limits = limits["n"]
 
@@ -41,8 +48,8 @@ def get_histogram(df):
 
 	xmin = 10 # TODO! Get data from parameters file(?)
 	xmax = 9999
-	ymin = 1E10
-	ymax = 1E13
+	ymin = 1E11
+	ymax = 2.61E12
 	rng = [[xmin, xmax],[ymin,ymax]]
 
 	heatmap, xedges, yedges = np.histogram2d(x, y, bins=N, range=rng, normed=True)
@@ -50,7 +57,7 @@ def get_histogram(df):
 
 	heatmap = gaussian_filter(heatmap, sigma=10)
 
-	return heatmap, extent
+	return heatmap, extent, xedges, yedges
 
 def determine_max_and_min(array):
 	"""
@@ -101,11 +108,12 @@ def get_xy_projections(array):
 # Import two solution set files and determine their heatmaps
 # ------------------------------------------------------------
 filepath_1 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/solset_MC_iters-1000_N-1000_q-9.csv"
-filepath_2 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/solset_MC_iters-1000_N-1000_q-10.csv"
+filepath_2 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/39-K/solset_MC_iters-1000_N-1000_q-9.csv"
 df_1 = set_limits(pd.read_csv(filepath_1))
 df_2 = set_limits(pd.read_csv(filepath_2))
-heatmap_1, extent_1 = get_histogram(df_1)
-heatmap_2, extent_2 = get_histogram(df_2)
+heatmap_1, extent_1, xedges1, yedges1 = get_histogram(df_1)
+heatmap_2, extent_2, xedges2, yedges2 = get_histogram(df_2)
+
 
 
 # Normalize the heatmaps
@@ -117,6 +125,8 @@ heatmap_2 = normalize_array(heatmap_2)
 # Multiply one heatmap by the other
 # ---------------------------------
 heatmap = heatmap_1*heatmap_2
+
+
 
 
 # Normalize
@@ -157,13 +167,13 @@ cbaxw = mainw
 cbaxh = 0.02
 
 # Energy-axis
-Ebins = 300
+Ebins = 100
 bool_E_log = True
 E_scale = "log"
 E_color = "crimson"
 
 # Electron density axis
-nbins = 300
+nbins = 100
 bool_n_log = True
 n_scale = "log"
 n_color = "crimson"
@@ -172,56 +182,85 @@ n_color = "crimson"
 
 
 # Get the values for the x and y-axis histograms
-# ----------------.-----------------------------
-E_1 = df_1["E"].values
-E_2 = df_2["E"].values
-n_1 = df_1["n"].values
-n_2 = df_2["n"].values
+# ----------------------------------------------
+acceptanceThreshold = 0.2
+found = 0
+for i, row in enumerate(heatmap):
+	if found:
+		break
+	for element in row:
+		if element > acceptanceThreshold:
+			xmin = xedges1[i]			
+			found=1
+			break
 
-x1, b1 = np.histogram(E_1, bins=Ebins, density=True)
-x2, b2 = np.histogram(E_2, bins=Ebins, density=True)
+found = 0
+for i, row in enumerate(heatmap[::-1]):
+	if found:
+		break
+	for element in row:
+		if not element < acceptanceThreshold:
+			xmax = xedges1[-i]			
+			found = 1
+			break
 
-tmp = [x1*x2 for x1, x2 in zip(x1, x2)]
-tmp = [e/max(tmp) for e in tmp]
-# print(tmp)
 
-x = np.zeros(len(tmp))
-for i in range(len(x)):
-	if not tmp[i] < 0.01:
-		x[i] = (b1[i+1]+b1[i])/2
+x=[]
+E1 = list(df_1["E"].values)
+tmp = []
+for i, e in enumerate(E1):
+	if (e > xmin) & (e < xmax):
+		tmp.append(e)
 
-y1, b1 = np.histogram(n_1, bins=nbins, density=True)
-y2, b2 = np.histogram(n_2, bins=nbins, density=True)
+E2 = list(df_2["E"].values)
+for i, e in enumerate(E2):
+	if (e > xmin) & (e < xmax):
+		tmp.append(e)
 
-tmp = [y1*y2 for y1, y2 in zip(y1, y2)]
-tmp = [e/max(tmp) for e in tmp]
+[x.append(e) for e in tmp]
 
-y = np.zeros(len(tmp))
-for i in range(len(y)):
-	if not tmp[i] < 0.01:
-		y[i] = (b1[i+1]+b1[i])/2
+print("xmin", min(x))
+print("xmax", max(x))
 
-xmin = min(x)
-xmax = max(x)
-ymin = min(y)
-ymax = max(y)
+# y-direction
+found = 0
+for i, row in enumerate(heatmap.T):
+	if found:
+		break
+	for element in row:
+		if element > acceptanceThreshold:
+			ymin = yedges1[i]			
+			found=1
+			break
 
-E = []
-[E.append(e) for e in E_1]
-[E.append(e) for e in E_2]
-x = []
-for i in range(len(E)):
-	if E[i] > xmin and E[i] < xmax:
-		x.append(E[i])
+found = 0
+for i, row in enumerate(heatmap.T[::-1]):
+	if found:
+		break
+	for element in row:
+		if not element < acceptanceThreshold:
+			ymax = yedges1[-i]			
+			found = 1
+			break
 
-n = []
-[n.append(e) for e in n_1]
-[n.append(e) for e in n_2]
-y = []
-for i in range(len(n)):
-	if n[i] > ymin and n[i] < ymax:
-		y.append(n[i])
 
+y=[]
+n1 = list(df_1["n"].values)
+tmp = []
+for i, e in enumerate(n1):
+	if (e > ymin) & (e < ymax):
+		tmp.append(e)
+
+n2 = list(df_2["n"].values)
+for i, e in enumerate(n2):
+	if (e > ymin) & (e < ymax):
+		tmp.append(e)
+
+[y.append(e) for e in tmp]
+
+print("ymin", min(y))
+print("ymax", max(y))
+	
 
 # Plot the heatmap
 # ----------------
@@ -236,11 +275,10 @@ im = plt.imshow(img, origin="lower",
 # ----------------
 
 
-
 # Plot x-projection histogram
 # ---------------------------
 xmarg = fig.add_axes([xmargx, xmargy, xmargw, xmargh])
-xmarg.hist(x, bins=Ebins, color=E_color, log=bool_E_log, density=False)
+xmarg.hist(x, bins=Ebins, color=E_color, density=True)
 xmarg.set(xlim=(E_limits[0], E_limits[1]))
 xmarg.set(xscale=E_scale)
 xmarg.spines["left"].set_visible(False)
@@ -255,7 +293,7 @@ xmarg.xaxis.set_visible(False)
 # Plot y-projection histogram
 # ---------------------------
 ymarg = fig.add_axes([ymargx, ymargy, ymargw, ymargh])
-ymarg.hist(y, bins=nbins, orientation="horizontal", color=n_color, log=bool_n_log, density=True)
+ymarg.hist(y, bins=nbins, orientation="horizontal", color=n_color, density=True)
 ymarg.set(ylim=(n_limits[0], n_limits[1]))
 ymarg.set(yscale=n_scale)
 ymarg.spines["top"].set_visible(False)
@@ -296,5 +334,5 @@ ymarg.set_xticks([])
 # ------------------------------------
 
 
-
+plt.savefig( "./leikkaus.png", format="png", dpi=300)
 plt.show()
