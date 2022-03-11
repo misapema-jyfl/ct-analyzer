@@ -149,9 +149,15 @@ class Plotting(object):
             # Apply Gaussian filter
             # Sigma controls 'coarseness' of heatmap:
             # larger -> smoother
-            # smaller -> coarser (sigma=1 -> individual data points)
+            # smaller -> coarser
             heatmap = gaussian_filter(heatmap, sigma=10) 
 
+            # A warning about using imshow for plotting a 2d histogram 
+            # of x/y values like this: by default, imshow plots the origin
+            # in the upper left corner and transposes the image. 
+            # What I would do to get the same orientation as a scatter plot
+            # is plt.imshow(heatmap.T, extent=extent, origin = 'lower') 
+            # – Jamie (Nov 18, 2013 at 13:29)
             img = heatmap.T
 
             extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]] 
