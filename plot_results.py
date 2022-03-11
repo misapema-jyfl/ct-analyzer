@@ -16,12 +16,42 @@ font = {'family' : 'sans-serif',
 
 matplotlib.rc('font', **font)
 
+
+
+
+
 class Plotting(object):
     """docstring for PlotSolutionSets"""
     def __init__(self, parameters):
         super(Plotting, self).__init__()
         self.parameters = parameters
 
+    def determine_max_and_min(self, array):
+        """
+        Determines the maximum and minimum value 
+        from an NxN array.
+        """
+        # Determine max and min
+        maximum_values = []
+        minimum_values = []
+        for i in range(len(array)):
+            maximum_values.append(max(array[i]))
+            minimum_values.append(min(array[i]))
+        maximum_value = max(maximum_values)
+        minimum_value = min(minimum_values)
+
+        return maximum_value, minimum_value
+
+    def normalize_array(self, array):
+        """
+        Normalizes an NxN array to unity.
+        """
+        maximum_value, minimum_value = self.determine_max_and_min(array)
+        for i in range(len(array)):
+            for j in range(len(array)):
+                array[i][j] = array[i][j]/maximum_value
+
+        return array
 
     def get_limits(self):
         """
@@ -146,12 +176,18 @@ class Plotting(object):
                 density=True
                 )
 
+            
+
             # Apply Gaussian filter
             # Sigma controls 'coarseness' of heatmap:
             # larger -> smoother
             # smaller -> coarser
             heatmap = gaussian_filter(heatmap, sigma=10) 
 
+            # Normalize the heatmap
+            # ---------------------
+            heatmap = self.normalize_array(heatmap)
+            
             # A warning about using imshow for plotting a 2d histogram 
             # of x/y values like this: by default, imshow plots the origin
             # in the upper left corner and transposes the image. 

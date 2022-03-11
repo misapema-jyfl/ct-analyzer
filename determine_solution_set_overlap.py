@@ -77,6 +77,8 @@ def normalize_array(array):
 		for j in range(len(array)):
 			array[i][j] = array[i][j]/(maximum_value-minimum_value)
 
+	return array
+
 def get_xy_projections(array):
 	"""
 	Projects the array to its 
@@ -108,8 +110,8 @@ heatmap_2, extent_2 = get_histogram(df_2)
 
 # Normalize the heatmaps
 # ----------------------
-normalize_array(heatmap_1)
-normalize_array(heatmap_2)
+heatmap_1 = normalize_array(heatmap_1)
+heatmap_2 = normalize_array(heatmap_2)
 
 
 # Multiply one heatmap by the other
