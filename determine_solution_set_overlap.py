@@ -100,8 +100,8 @@ def get_xy_projections(array):
 
 # Import two solution set files and determine their heatmaps
 # ------------------------------------------------------------
-filepath_1 = "/home/miha/Work/codes/ct-analyzer/test/results/solution_set_k6+.csv"
-filepath_2 = "/home/miha/Work/codes/ct-analyzer/test/results/solution_set_k7+.csv"
+filepath_1 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/solset_MC_iters-1000_N-1000_q-9.csv"
+filepath_2 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/solset_MC_iters-1000_N-1000_q-10.csv"
 df_1 = set_limits(pd.read_csv(filepath_1))
 df_2 = set_limits(pd.read_csv(filepath_2))
 heatmap_1, extent_1 = get_histogram(df_1)
@@ -177,12 +177,51 @@ E_1 = df_1["E"].values
 E_2 = df_2["E"].values
 n_1 = df_1["n"].values
 n_2 = df_2["n"].values
+
+x1, b1 = np.histogram(E_1, bins=Ebins, density=True)
+x2, b2 = np.histogram(E_2, bins=Ebins, density=True)
+
+tmp = [x1*x2 for x1, x2 in zip(x1, x2)]
+tmp = [e/max(tmp) for e in tmp]
+# print(tmp)
+
+x = np.zeros(len(tmp))
+for i in range(len(x)):
+	if not tmp[i] < 0.01:
+		x[i] = (b1[i+1]+b1[i])/2
+
+y1, b1 = np.histogram(n_1, bins=nbins, density=True)
+y2, b2 = np.histogram(n_2, bins=nbins, density=True)
+
+tmp = [y1*y2 for y1, y2 in zip(y1, y2)]
+tmp = [e/max(tmp) for e in tmp]
+
+y = np.zeros(len(tmp))
+for i in range(len(y)):
+	if not tmp[i] < 0.01:
+		y[i] = (b1[i+1]+b1[i])/2
+
+xmin = min(x)
+xmax = max(x)
+ymin = min(y)
+ymax = max(y)
+
+E = []
+[E.append(e) for e in E_1]
+[E.append(e) for e in E_2]
 x = []
-[x.append(e) for e in E_1]
-[x.append(e) for e in E_2]
+for i in range(len(E)):
+	if E[i] > xmin and E[i] < xmax:
+		x.append(E[i])
+
+n = []
+[n.append(e) for e in n_1]
+[n.append(e) for e in n_2]
 y = []
-[y.append(e) for e in n_1]
-[y.append(e) for e in n_2]
+for i in range(len(n)):
+	if n[i] > ymin and n[i] < ymax:
+		y.append(n[i])
+
 
 # Plot the heatmap
 # ----------------
@@ -201,7 +240,7 @@ im = plt.imshow(img, origin="lower",
 # Plot x-projection histogram
 # ---------------------------
 xmarg = fig.add_axes([xmargx, xmargy, xmargw, xmargh])
-xmarg.hist(x, bins=Ebins, color=E_color, log=bool_E_log, density=True)
+xmarg.hist(x, bins=Ebins, color=E_color, log=bool_E_log, density=False)
 xmarg.set(xlim=(E_limits[0], E_limits[1]))
 xmarg.set(xscale=E_scale)
 xmarg.spines["left"].set_visible(False)
