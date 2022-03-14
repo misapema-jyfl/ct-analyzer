@@ -1,5 +1,5 @@
-working_directory: "./"
-results_directory: "./test/results/"
+working_directory: "/home/miha/Work/codes/ct-analyzer/"
+results_directory: "/home/miha/Work/codes/ct-analyzer/test/results/"
 injected_species: "k" # Lower case! Element abbreviation (e.g. Potassium -> "k", Sodium -> "na")
 measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
 
@@ -32,7 +32,6 @@ optimize_nE:
   do: 0
   # Available rate coefficient evaluation methods:
   # - 'MB' -> interpolation functions based on a Maxwell-Boltzmann EED
-  
   # For electron density limits, pass the tuple ('cutoff', FREQUENCY)
   # where FREQUENCY is the ion source microwave frequency in units of Hz.
   # The code will then calculate the cutoff frequency and use that
@@ -52,4 +51,4 @@ plotting:
   penalty_function_upper_limit: 1E-6
   advanced:
     override_charge_states: 1
-    charge_states: [5,6,7,8,10]
+    charge_states: [5,6,7,8,9,10]

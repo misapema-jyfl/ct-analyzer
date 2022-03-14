@@ -16,12 +16,42 @@ font = {'family' : 'sans-serif',
 
 matplotlib.rc('font', **font)
 
+
+
+
+
 class Plotting(object):
     """docstring for PlotSolutionSets"""
     def __init__(self, parameters):
         super(Plotting, self).__init__()
         self.parameters = parameters
 
+    def determine_max_and_min(self, array):
+        """
+        Determines the maximum and minimum value 
+        from an NxN array.
+        """
+        # Determine max and min
+        maximum_values = []
+        minimum_values = []
+        for i in range(len(array)):
+            maximum_values.append(max(array[i]))
+            minimum_values.append(min(array[i]))
+        maximum_value = max(maximum_values)
+        minimum_value = min(minimum_values)
+
+        return maximum_value, minimum_value
+
+    def normalize_array(self, array):
+        """
+        Normalizes an NxN array to unity.
+        """
+        maximum_value, minimum_value = self.determine_max_and_min(array)
+        for i in range(len(array)):
+            for j in range(len(array)):
+                array[i][j] = array[i][j]/maximum_value
+
+        return array
 
     def get_limits(self):
         """
@@ -34,11 +64,11 @@ class Plotting(object):
         if E_limits[0] == 0:
             E_lo = 10
         else:
-            E_lo = E_limits[0]
+            E_lo = np.float(E_limits[0])
         if E_limits[1] == 0:
             E_hi = 9999
         else:
-            E_hi = E_limits[1]
+            E_hi = np.float(E_limits[1])
         E_limits = [E_lo, E_hi]
 
 
@@ -49,11 +79,11 @@ class Plotting(object):
         if n_limits[0] == 0:
             n_lo = np.float(1E10)
         else:
-            n_lo = n_limits[0]
+            n_lo = np.float(n_limits[0])
         if n_limits[1] == 0:
             n_hi = np.float(1E13)
         else:
-            n_hi = n_limits[1]
+            n_hi = np.float(n_limits[1])
         n_limits = [n_lo, n_hi]
 
 
@@ -146,12 +176,24 @@ class Plotting(object):
                 density=True
                 )
 
+            
+
             # Apply Gaussian filter
             # Sigma controls 'coarseness' of heatmap:
             # larger -> smoother
-            # smaller -> coarser (sigma=1 -> individual data points)
-            heatmap = gaussian_filter(heatmap, sigma=10) 
+            # smaller -> coarser
+            heatmap = gaussian_filter(heatmap, sigma=5) 
 
+            # Normalize the heatmap
+            # ---------------------
+            heatmap = self.normalize_array(heatmap)
+            
+            # A warning about using imshow for plotting a 2d histogram 
+            # of x/y values like this: by default, imshow plots the origin
+            # in the upper left corner and transposes the image. 
+            # What I would do to get the same orientation as a scatter plot
+            # is plt.imshow(heatmap.T, extent=extent, origin = 'lower') 
+            # – Jamie (Nov 18, 2013 at 13:29)
             img = heatmap.T
 
             extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]] 
@@ -190,13 +232,13 @@ class Plotting(object):
 
             # Energy-axis
             Ebins = 100
-            bool_E_log = True
+            bool_E_log = False
             E_scale = "log"
             E_color = "crimson"
 
             # Electron density axis
             nbins = 100
-            bool_n_log = True
+            bool_n_log = False
             n_scale = "log"
             n_color = "crimson"
             # ----------------------------------------------
