@@ -1,0 +1,21 @@
+# Results directory
+results_directory: "./"
+
+# Paths to datasets
+# use keys e.g. na-6+, k-9+, etc.
+datasets: {"na-6+": "/home/miha/Desktop/two_species/2021-10-01_Na_K/na/10ms_pulse/solution_set_na6+.csv",
+"na-7+": "/home/miha/Desktop/two_species/2021-10-01_Na_K/na/10ms_pulse/solution_set_na7+.csv"}
+
+# Plotting limits
+limits: {"F":1E-6,
+"n":[1E11, 2.61E12],
+"E":[10,1E4]}
+
+# Number of bins for the histogram / heatmap.
+bins: 1000
+
+# Sigma for the Gaussian filtering
+sigma: 3
+
+# Threshold to consider solutions in overlap
+acceptance_threshold: 0.1
