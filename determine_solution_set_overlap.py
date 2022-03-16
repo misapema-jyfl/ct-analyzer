@@ -18,7 +18,7 @@ matplotlib.rc('font', **font)
 
 
 # Get the limits TODO! From parameters!
-limits = {"F":1E-9, "n":[1E11, 2.61E12], "E":[10,9999]}
+limits = {"F":1E-6, "n":[1E11, 2.61E12], "E":[10,10000]}
 E_limits = limits["E"]
 n_limits = limits["n"]
 
@@ -41,10 +41,10 @@ def set_limits(df):
 def get_histogram(df):
 	"""
 	"""
-	N = 1000
+	N = 200
 
-	x = df_1["E"]
-	y = df_1["n"]
+	x = df["E"]
+	y = df["n"]
 
 	xmin = 10 # TODO! Get data from parameters file(?)
 	xmax = 9999
@@ -55,7 +55,7 @@ def get_histogram(df):
 	heatmap, xedges, yedges = np.histogram2d(x, y, bins=N, range=rng, normed=True)
 	extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
-	heatmap = gaussian_filter(heatmap, sigma=10)
+	heatmap = gaussian_filter(heatmap, sigma=3)
 
 	return heatmap, extent, xedges, yedges
 
@@ -86,33 +86,19 @@ def normalize_array(array):
 
 	return array
 
-def get_xy_projections(array):
-	"""
-	Projects the array to its 
-	x and y-axes by taking the sum 
-	of values in rows/columns
-	of the array.
-	"""
-	x = []
-	y = []
-	# Projection to the x-axis
-	for i in range(len(array)):
-		x.append(sum(array[i]))
-	# Projection to the y-axis
-	for i in range(len(array)):	
-		y.append(sum(array.T[i]))
-
-	return np.array(x), np.array(y)
-
 
 # Import two solution set files and determine their heatmaps
 # ------------------------------------------------------------
-filepath_1 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/solset_MC_iters-1000_N-1000_q-9.csv"
-filepath_2 = "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/39-K/solset_MC_iters-1000_N-1000_q-9.csv"
+filepath_1 = "/home/miha/Desktop/two_species/2021-10-01_Na_K/na/10ms_pulse/solution_set_na7+.csv"
+filepath_2 = "/home/miha/Desktop/two_species/2021-10-01_Na_K/na/10ms_pulse/solution_set_na6+.csv"
 df_1 = set_limits(pd.read_csv(filepath_1))
 df_2 = set_limits(pd.read_csv(filepath_2))
+
 heatmap_1, extent_1, xedges1, yedges1 = get_histogram(df_1)
 heatmap_2, extent_2, xedges2, yedges2 = get_histogram(df_2)
+
+heatmap_1 = np.array(heatmap_1)
+heatmap_2 = np.array(heatmap_2)
 
 
 
@@ -124,16 +110,56 @@ heatmap_2 = normalize_array(heatmap_2)
 
 # Multiply one heatmap by the other
 # ---------------------------------
-heatmap = heatmap_1*heatmap_2
-
-
+heatmap = np.multiply(heatmap_1, heatmap_2)
 
 
 # Normalize
 # ---------
 normalize_array(heatmap)
+acceptanceThreshold = 0.1
+for i in range(len(heatmap)):
+	for j in range(len(heatmap)):
+		if heatmap[i][j] < acceptanceThreshold:
+			heatmap[i][j] = 0
+
+# Find the number of non-zero elements in new array
+# -------------------------------------------------
+print("Non-zero elements in df_1: {}".format(np.count_nonzero(heatmap_1)))
+print("Non-zero elements in df_2: {}".format(np.count_nonzero(heatmap_2)))
+print("Non-zero elements in overlap: {}".format(np.count_nonzero(heatmap)))
 
 
+# Find the n, E values in the overlap
+# -----------------------------------
+acceptanceThreshold = 0
+xedges, yedges = xedges1, yedges1
+E_overlap = []
+n_overlap = []
+for i in range(len(xedges)-1):
+	E_lo = xedges[i]
+	E_hi = xedges[i+1] 
+	for j in range(len(yedges)-1):
+		n_lo = yedges[j]
+		n_hi = yedges[j+1]
+		if heatmap[i][j] > acceptanceThreshold:
+			c1 = (df_1["E"]>E_lo)&(df_1["E"]<E_hi)&(df_1["n"]>n_lo)&(df_1["n"]<n_hi)
+			df_tmp = df_1[c1]
+			E1 = df_1["E"][c1]
+			n1 = df_1["n"][c1]
+			c2 = (df_2["E"]>E_lo)&(df_2["E"]<E_hi)&(df_2["n"]>n_lo)&(df_2["n"]<n_hi)
+			E2 = df_2["E"][c2]
+			n2 = df_2["n"][c2]
+			[E_overlap.append(e) for e in E1]
+			[E_overlap.append(e) for e in E2]
+			[n_overlap.append(n) for n in n1]
+			[n_overlap.append(n) for n in n2]
+x = E_overlap
+y = n_overlap
+
+print("xmin: {:.0f}".format(min(x)))
+print("xmax: {:.0f}".format(max(x)))
+print("ymin: {:.2e}".format(min(y)))
+print("ymax: {:.2e}".format(max(y)))
 
 # Generate the figure
 # -------------------------------------------------------------------
@@ -167,100 +193,24 @@ cbaxw = mainw
 cbaxh = 0.02
 
 # Energy-axis
-Ebins = 100
-bool_E_log = True
+Ebins = 200
+bool_E_log = False
 E_scale = "log"
 E_color = "crimson"
 
 # Electron density axis
-nbins = 100
-bool_n_log = True
+nbins = 200
+bool_n_log = False
 n_scale = "log"
 n_color = "crimson"
 # ----------------------------------------------
 
 
 
-# Get the values for the x and y-axis histograms
-# ----------------------------------------------
-acceptanceThreshold = 0.2
-found = 0
-for i, row in enumerate(heatmap):
-	if found:
-		break
-	for element in row:
-		if element > acceptanceThreshold:
-			xmin = xedges1[i]			
-			found=1
-			break
-
-found = 0
-for i, row in enumerate(heatmap[::-1]):
-	if found:
-		break
-	for element in row:
-		if not element < acceptanceThreshold:
-			xmax = xedges1[-i]			
-			found = 1
-			break
 
 
-x=[]
-E1 = list(df_1["E"].values)
-tmp = []
-for i, e in enumerate(E1):
-	if (e > xmin) & (e < xmax):
-		tmp.append(e)
-
-E2 = list(df_2["E"].values)
-for i, e in enumerate(E2):
-	if (e > xmin) & (e < xmax):
-		tmp.append(e)
-
-[x.append(e) for e in tmp]
-
-print("xmin", min(x))
-print("xmax", max(x))
-
-# y-direction
-found = 0
-for i, row in enumerate(heatmap.T):
-	if found:
-		break
-	for element in row:
-		if element > acceptanceThreshold:
-			ymin = yedges1[i]			
-			found=1
-			break
-
-found = 0
-for i, row in enumerate(heatmap.T[::-1]):
-	if found:
-		break
-	for element in row:
-		if not element < acceptanceThreshold:
-			ymax = yedges1[-i]			
-			found = 1
-			break
 
 
-y=[]
-n1 = list(df_1["n"].values)
-tmp = []
-for i, e in enumerate(n1):
-	if (e > ymin) & (e < ymax):
-		tmp.append(e)
-
-n2 = list(df_2["n"].values)
-for i, e in enumerate(n2):
-	if (e > ymin) & (e < ymax):
-		tmp.append(e)
-
-[y.append(e) for e in tmp]
-
-print("ymin", min(y))
-print("ymax", max(y))
-	
 
 # Plot the heatmap
 # ----------------
@@ -273,6 +223,12 @@ im = plt.imshow(img, origin="lower",
           aspect = "auto",
           interpolation = "none")
 # ----------------
+
+
+
+# Out of curiosity
+# [ax1.axvline(x, color="b") for x in xedges1]
+# [ax1.axhline(x, color="b") for x in yedges1]
 
 
 # Plot x-projection histogram
@@ -334,5 +290,6 @@ ymarg.set_xticks([])
 # ------------------------------------
 
 
-plt.savefig( "./leikkaus.png", format="png", dpi=300)
-plt.show()
+plt.savefig("./overlap_na_6-7.png", format="png", dpi=300)
+plt.savefig("./overlap_na_6-7.eps", format="eps")
+plt.close()
