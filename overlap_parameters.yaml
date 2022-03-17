@@ -1,0 +1,37 @@
+# Results directory
+results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K_41-K/data_from_analysis_3/"
+
+# Paths to datasets
+# use keys e.g. na-6+, k-9+, etc.
+datasets: {
+# "39-k-9+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K_41-K/data_from_analysis_3/solution_set39k9+.csv",
+"39-k-10+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K_41-K/data_from_analysis_3/solution_set39k10+.csv",
+# "41-k-9+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K_41-K/data_from_analysis_3/solution_set_41k9+.csv",
+"41-k-10+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K_41-K/data_from_analysis_3/solution_set_41k10+.csv",
+#"41-k-11+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K_41-K/data_from_analysis_3/solution_set_41k11+.csv"
+}
+
+# Plotting limits
+limits: {"F":1E-6,
+"n":[1E11, 2.61E12],
+"E":[10,1E4]}
+
+# Number of bins for the histogram / heatmap.
+bins: 200
+
+# Sigma for the Gaussian filtering
+sigma: 2
+
+# Threshold to consider solutions in overlap
+acceptance_threshold: 1E-1
+# acceptance_threshold: 1E-6
+
+margin_color: "crimson"
+# margin_color: "gray"
+
+# 
+plot_all_non_zero: 0
+
+# 
+plot_overlap: 1
+
