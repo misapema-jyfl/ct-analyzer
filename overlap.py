@@ -8,23 +8,15 @@ from scipy.ndimage import gaussian_filter
 from matplotlib import cm
 import matplotlib
 
+
+
 def determine_max_and_min(array):
 	"""
 	Determines the maximum and minimum value 
 	from an NxN array.
 	"""
-	# Determine max and min
-	maximum_values = []
-	minimum_values = []
-	for i in range(len(array)):
-		maximum_values.append(max(array[i]))
-		minimum_values.append(min(array[i]))
-	maximum_value = max(maximum_values)
-	minimum_value = min(minimum_values)
-
-	return maximum_value, minimum_value
-
-
+	# return maximum_value, minimum_value
+	return max([max(row) for row in array]), min([min(row) for row in array])
 
 
 class Overlap(object):
@@ -32,10 +24,17 @@ class Overlap(object):
 	def __init__(self, parameters):
 		super(Overlap, self).__init__()
 		self.parameters = parameters
-		self.parameters["limits"]["E"][0] = np.float(self.parameters["limits"]["E"][0])
-		self.parameters["limits"]["E"][-1] = np.float(self.parameters["limits"]["E"][-1])
-		self.parameters["limits"]["n"][0] = np.float(self.parameters["limits"]["n"][0])
-		self.parameters["limits"]["n"][-1] = np.float(self.parameters["limits"]["n"][-1])
+
+		for key, arg in self.parameters["limits"].items():
+			if type(arg) == str:
+				self.parameters["limits"][key] = np.float(arg)
+			elif type(arg) == list:
+				self.parameters["limits"][key] = [np.float(a) for a in arg]
+		self.parameters["acceptance_threshold"] = np.float(self.parameters["acceptance_threshold"])
+		# self.parameters["limits"]["E"][0] = np.float(self.parameters["limits"]["E"][0])
+		# self.parameters["limits"]["E"][-1] = np.float(self.parameters["limits"]["E"][-1])
+		# self.parameters["limits"]["n"][0] = np.float(self.parameters["limits"]["n"][0])
+		# self.parameters["limits"]["n"][-1] = np.float(self.parameters["limits"]["n"][-1])
 	
 	def normalize_array(self, array):
 		"""
@@ -56,7 +55,7 @@ class Overlap(object):
 	    limits = self.parameters["limits"]
 
 	    # Apply the limits
-	    df = df[df["F"]<np.float(limits["F"])]
+	    df = df[df["F"]<limits["F"]]
 	    # df = df[(df["n"]<limits["n"][1])&(df["n"]>limits["n"][0])] # Meaningless in this context
 	    # df = df[(df["E"]<limits["E"][1])&(df["E"]>limits["E"][0])] 
 
@@ -126,6 +125,23 @@ class Overlap(object):
 		return result
 
 
+	def set_non_zero_to_one(self, histogram_data):
+		"""
+		For visualizing the regions where any number 
+		of solutions exist.
+		"""
+		acceptanceThreshold = self.parameters["acceptance_threshold"]
+		for i, row in enumerate(histogram_data):
+			for j, element in enumerate(row):
+				if element < acceptanceThreshold:
+					histogram_data[i][j] = 0
+				else:
+					histogram_data[i][j] = 1
+		return histogram_data
+
+
+
+
 	def plot_heatmap(self, histogram_data, x, y, extent, output_name):
 		"""
 		"""
@@ -163,15 +179,15 @@ class Overlap(object):
 
 		# Energy-axis
 		E_limits = self.parameters["limits"]["E"]
-		Ebins = 100
+		Ebins = self.parameters["bins"]
 		E_scale = "log"
-		E_color = "crimson"
+		E_color = self.parameters["margin_color"]
 
 		# Electron density axis
 		n_limits = self.parameters["limits"]["n"]
-		nbins = 100
+		nbins = self.parameters["bins"]
 		n_scale = "log"
-		n_color = "crimson"
+		n_color = self.parameters["margin_color"]
 		# ----------------------------------------------
 
 

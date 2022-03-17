@@ -1,10 +1,10 @@
 # Results directory
-results_directory: "./"
+results_directory: "./test/overlap_results/"
 
 # Paths to datasets
 # use keys e.g. na-6+, k-9+, etc.
-datasets: {"na-6+": "/home/miha/Desktop/two_species/2021-10-01_Na_K/na/10ms_pulse/solution_set_na6+.csv",
-"na-7+": "/home/miha/Desktop/two_species/2021-10-01_Na_K/na/10ms_pulse/solution_set_na7+.csv"}
+datasets: {"k-9+": "./test/results/solution_set_k9+.csv",
+"k-10+": "./test/results/solution_set_k10+.csv"}
 
 # Plotting limits
 limits: {"F":1E-6,
@@ -15,7 +15,17 @@ limits: {"F":1E-6,
 bins: 1000
 
 # Sigma for the Gaussian filtering
-sigma: 3
+sigma: 5
 
 # Threshold to consider solutions in overlap
-acceptance_threshold: 0.1
+# acceptance_threshold: 1E-1
+acceptance_threshold: 1E-1
+
+# margin_color: "crimson"
+margin_color: "gray"
+
+# 
+plot_all_non_zero: 1
+
+# 
+plot_overlap: 0
