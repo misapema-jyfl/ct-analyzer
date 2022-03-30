@@ -199,14 +199,14 @@ def generate_overlap(Overlap_object):
 		# of the characteristic values within the overlap.
 		# ------------------------------------------------
 		df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
-			index=["tau", "inz_rate", "cx_rate", "eC", "F"])
+			index=["tau", "inz_time", "cx_time", "eC", "F"])
 		for characteristic_key, data in result.items():
 			
 			# If the data corresponds to inz_rate or cx_rate,
 			# convert it to inz_time and cx_time instead.
 			if characteristic_key == "inz_rate" or characteristic_key == "cx_rate":
 				data = data**(-1)
-				
+
 			lo, median, hi = find_confidence_interval(list_of_values=np.array(data), condition_percentage=0.341)
 			lo_err = median-lo
 			hi_err = hi-median
