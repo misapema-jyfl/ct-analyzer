@@ -100,9 +100,17 @@ class Overlap(object):
 	def find_solutions_in_overlap(self, df, xedges, yedges,
 	 overlap_heatmap):
 		"""
+		Checks each bin defined by xedges and yedges,
+		and finds solutions that fall within said bin.
 		"""
 		n_overlap = []
 		E_overlap = []
+		tau_overlap = []
+		inz_rate_overlap = []
+		cx_rate_overlap = []
+		eC_overlap = []
+		F_overlap = []
+
 		for i in range(len(xedges)-1):
 			E_lo = xedges[i]
 			E_hi = xedges[i+1] 
@@ -112,15 +120,31 @@ class Overlap(object):
 				if overlap_heatmap[i][j] > 0:
 					c = (df["E"]>E_lo)&(df["E"]<E_hi)&(df["n"]>n_lo)&(df["n"]<n_hi)
 					df_tmp = df[c]
+
 					E = df_tmp["E"]
 					n = df_tmp["n"]
+					tau = df_tmp["tau"]
+					inz_rate = df_tmp["inz_rate"] 
+					cx_rate = df_tmp["cx_rate"] 
+					eC = df_tmp["eC"] 
+					F = df_tmp["F"] 
+					
 					[E_overlap.append(e) for e in E]
-					[n_overlap.append(n) for n in n]
-					# TODO! Find characteristic values corresponding to 
-					# these n,E simultaneously with this.
+					[n_overlap.append(density) for density in n]
+					[tau_overlap.append(tau) for tau in tau]
+					[inz_rate_overlap.append(inz) for inz in inz_rate]
+					[cx_rate_overlap.append(cx) for cx in cx_rate]
+					[eC_overlap.append(e) for e in eC]
+					[F_overlap.append(f) for f in F]
+					
 		result = {}
 		result["n"] = n_overlap
 		result["E"] = E_overlap
+		result["tau"] = tau_overlap
+		result["inz_rate"] = inz_rate_overlap
+		result["cx_rate"] = cx_rate_overlap
+		result["eC"] = eC_overlap
+		result["F"] = F_overlap
 		
 		return result
 
