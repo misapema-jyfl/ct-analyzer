@@ -245,7 +245,6 @@ class Overlap(object):
 		# Plot the colorbar
 		# ---------------------------
 		cbax = fig.add_axes([cbaxx, cbaxy, cbaxw, cbaxh])
-
 		if cbar_type == "continuous":
 			plt.colorbar(im, cax=cbax, orientation="horizontal")	
 		elif cbar_type == "binary":
