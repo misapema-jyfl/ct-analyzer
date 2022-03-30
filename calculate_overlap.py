@@ -15,12 +15,12 @@ pathToParameterFile = sys.argv[1]
 parameters = yaml.safe_load(open(pathToParameterFile)) 
 Overlap = overlap.Overlap(parameters)
 
-print("Parameters:")
-print("----------------------")
+print("\nParameters:")
+print("--------------------------------------")
 print("bins: ", parameters["bins"])
 print("sigma: ", parameters["sigma"])
 print("acceptance_threshold: {:.2e}".format(parameters["acceptance_threshold"]))
-print("----------------------")
+print("--------------------------------------\n")
 
 def retrieve_data():
 	"""
@@ -100,10 +100,13 @@ def generate_overlap(Overlap_object):
 			output_name=key,
 			margin_color="crimson")
 
+	print("\nOverlap boundaries:")
+	print("--------------------------------------")
 	print("E_min: {:.0f} eV".format(min(x)))
 	print("E_max: {:.0f} eV".format(max(x)))
 	print("n_min: {:.2e} 1/cm3".format(min(y)))
 	print("n_max: {:.2e} 1/cm3".format(max(y)))
+	print("--------------------------------------")
 
 	# Plot the overlap heatmap of all input solution sets
 	# ---------------------------------------------------
@@ -136,12 +139,13 @@ def plot_all_non_zero(Overlap_object):
 			y=n,
 			extent=result["extent"], 
 			output_name="all_solutions_{}".format(key),
-			margin_color="gray")
+			margin_color="gray",
+			cbar_type="binary")
 
 
 generate_overlap(Overlap_object=Overlap)
 plot_all_non_zero(Overlap_object=Overlap)
 
 
-print("Done!")
+print("\nDone!")
 

@@ -143,8 +143,9 @@ class Overlap(object):
 
 
 	def plot_heatmap(self, histogram_data, x, y, extent, output_name,
-		margin_color):
+		margin_color, cbar_type="continuous"):
 		"""
+		cbar_type: Either "continuous" or "binary"
 		"""
 
 		# Generate the figure
@@ -195,10 +196,15 @@ class Overlap(object):
 
 		# Plot the heatmap
 		# ----------------
+		if cbar_type == "continuous":
+			cmap = cm.gist_heat
+		elif cbar_type == "binary":
+			cmap = cm.get_cmap("gist_heat", 2)
+
 		img = histogram_data.T
 		ax1 = fig.add_axes([mainx, mainy, mainw, mainh])
 		im = plt.imshow(img, origin="lower",
-		          cmap = cm.gist_heat,
+		          cmap = cmap,
 		          extent = extent,
 		          aspect = "auto",
 		          interpolation = "none")
@@ -239,7 +245,12 @@ class Overlap(object):
 		# Plot the colorbar
 		# ---------------------------
 		cbax = fig.add_axes([cbaxx, cbaxy, cbaxw, cbaxh])
-		plt.colorbar(im, cax=cbax, orientation="horizontal")
+
+		if cbar_type == "continuous":
+			plt.colorbar(im, cax=cbax, orientation="horizontal")	
+		elif cbar_type == "binary":
+			plt.colorbar(im, cax=cbax, orientation="horizontal",
+				ticks = [0,1])	
 		# ---------------------------
 
 
