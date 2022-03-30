@@ -22,6 +22,93 @@ print("sigma: ", parameters["sigma"])
 print("acceptance_threshold: {:.2e}".format(parameters["acceptance_threshold"]))
 print("--------------------------------------\n")
 
+
+def find_confidence_interval(list_of_values, condition_percentage):
+        '''
+        Seek the lower and upper limit in a list of values, which enclose 
+        between themselves and the median a given percentage of all values 
+        in the list. 
+        
+    
+        Parameters
+        ----------
+        list_of_values : list
+            List of the values, for which the analysis will be carried out.
+        condition_percentage : float
+            The percentage limit.
+    
+        Returns
+        -------
+        x_lo : float
+            Lower limit.
+        median : float
+            Median value.
+        x_hi : float
+            Upper limit.
+    
+        '''
+        xs = list_of_values
+        p = condition_percentage
+        
+        if not xs.size > 0:
+            # print("Given list of values is empty!")
+            return 0, 0, 0
+        
+        else:
+            median = np.median(xs)
+            
+            percentages = []
+            x_his = []
+            for x in xs:
+                if x > median:
+                    # Select elements between current element and median
+                    interval = xs[(xs<=x)&(xs>=median)]
+                    # Calculate percentage of all values within current interval
+                    percentage = (len(interval))/len(xs)
+                    # If this interval satisfies the condition, add it to list
+                    if percentage >= p:
+                        percentages.append(percentage)
+                        x_his.append(x)
+            # Find the minimum percentage satisfying the condition
+            # along with the corresponding element.
+            percentages=np.array(percentages)
+            
+            if not percentages.size > 0:
+                print("There are no elements within the confidence interval!")
+                x_hi = 0
+            else:    
+                result = np.where(percentages==min(percentages))
+                idx = result[0][0]
+                x_hi = x_his[idx]
+            
+            # Find value x_lo, for which p fraction of all results are between 
+            # it and the median
+            percentages = []
+            x_los = []
+            for x in xs:
+                if x < median:
+                    # Select elements between current element and median
+                    interval = xs[(xs>=x)&(xs<=median)]
+                    # Calculate percentage of all values within current interval
+                    percentage = (len(interval))/len(xs)
+                    # If this interval satisfies the condition, add it to list
+                    if percentage >= p:
+                        percentages.append(percentage)
+                        x_los.append(x)
+            # Find the minimum percentage satisfying the condition
+            # along with the corresponding element.
+            percentages=np.array(percentages)
+            if not percentages.size > 0:
+                print("There are no elements within the confidence interval!")
+                x_lo = 0
+            else:    
+                result = np.where(percentages==min(percentages))
+                idx = result[0][0]
+                x_lo = x_los[idx]
+        
+        return x_lo, median, x_hi
+
+
 def retrieve_data():
 	"""
 	Find the data given in parameters file.
@@ -79,17 +166,59 @@ def generate_overlap(Overlap_object):
 
 	# Find solutions within the overlap
 	# ---------------------------------
+
+	# Collect the characteristic values from the overlap
+	characteristic_value_dict = {}
+
+	print("\n(n,E)-pairs within the overlap:")
+	print("--------------------------------------")
 	x, y = [], [] # lists for generating margin histograms
 	for key, arg in parameters["datasets"].items():
 		df = pd.read_csv(arg)
-		result = Overlap.find_solutions_in_overlap(df, 
+		result = Overlap.find_solutions_in_overlap(
+			df, 
 			xedges=xedges, 
 			yedges=yedges, 
 			overlap_heatmap=overlap_heatmap)
+		
 		n = result["n"]
 		E = result["E"]
+		tau = result["tau"]
+		inz_rate = result["inz_rate"]
+		cx_rate = result["cx_rate"]
+		eC = result["eC"]
+		F = result["F"]
+
+		# Save the overlap dataframe
+		# --------------------------
+		outDir = parameters["results_directory"]
+		df_tmp = pd.DataFrame(result)
+		df_tmp.to_csv(outDir + "overlap_df_" + key + ".csv", index=None)
+
+		# Determine the medians, lo_err and hi_err 
+		# of the characteristic values within the overlap.
+		# ------------------------------------------------
+		df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
+			index=["tau", "inz_rate", "cx_rate", "eC", "F"])
+		for characteristic_key, data in result.items():
+			
+			# If the data corresponds to inz_rate or cx_rate,
+			# convert it to inz_time and cx_time instead.
+			if characteristic_key == "inz_rate" or characteristic_key == "cx_rate":
+				data = data**(-1)
+				
+			lo, median, hi = find_confidence_interval(list_of_values=np.array(data), condition_percentage=0.341)
+			lo_err = median-lo
+			hi_err = hi-median
+			df_tmp["lo_err"][characteristic_key] = lo_err
+			df_tmp["median"][characteristic_key] = median
+			df_tmp["hi_err"][characteristic_key] = hi_err
+		df_tmp.to_csv(outDir + "overlap_results_" + key + ".csv")
+
 		[y.append(n) for n in n]
 		[x.append(e) for e in E]
+
+		print("{}: {}".format(key, str(len(n))))
 
 		# Plot the heatmap of the input solution set
 		# ------------------------------------------
@@ -99,6 +228,7 @@ def generate_overlap(Overlap_object):
 			extent=heatmaps[key]["extent"], 
 			output_name=key,
 			margin_color="crimson")
+	print("--------------------------------------")
 
 	print("\nOverlap boundaries:")
 	print("--------------------------------------")
@@ -147,5 +277,5 @@ generate_overlap(Overlap_object=Overlap)
 plot_all_non_zero(Overlap_object=Overlap)
 
 
-print("\nDone!")
+print("\nDone!\n")
 
