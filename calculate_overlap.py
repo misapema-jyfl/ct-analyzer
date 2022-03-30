@@ -15,6 +15,13 @@ pathToParameterFile = sys.argv[1]
 parameters = yaml.safe_load(open(pathToParameterFile)) 
 Overlap = overlap.Overlap(parameters)
 
+print("Parameters:")
+print("----------------------")
+print("bins: ", parameters["bins"])
+print("sigma: ", parameters["sigma"])
+print("acceptance_threshold: {:.2e}".format(parameters["acceptance_threshold"]))
+print("----------------------")
+
 def retrieve_data():
 	"""
 	Find the data given in parameters file.
@@ -84,26 +91,28 @@ def generate_overlap(Overlap_object):
 		[y.append(n) for n in n]
 		[x.append(e) for e in E]
 
-		# Plot the heatmap
-		# ----------------
+		# Plot the heatmap of the input solution set
+		# ------------------------------------------
 		Overlap.plot_heatmap(histogram_data=heatmaps[key]["heatmap"], 
 			x=Overlap.set_limits(df)["E"],
 			y=Overlap.set_limits(df)["n"],
 			extent=heatmaps[key]["extent"], 
-			output_name=key)
+			output_name=key,
+			margin_color="crimson")
 
 	print("E_min: {:.0f} eV".format(min(x)))
 	print("E_max: {:.0f} eV".format(max(x)))
 	print("n_min: {:.2e} 1/cm3".format(min(y)))
 	print("n_max: {:.2e} 1/cm3".format(max(y)))
 
-	# Plot the overlap heatmap
-	# ------------------------
+	# Plot the overlap heatmap of all input solution sets
+	# ---------------------------------------------------
 	Overlap.plot_heatmap(histogram_data=overlap_heatmap, 
 		x=x,
 		y=y, 
 		extent=extent, 
-		output_name="overlap")
+		output_name="overlap",
+		margin_color="crimson")
 
 
 def plot_all_non_zero(Overlap_object):
@@ -126,13 +135,13 @@ def plot_all_non_zero(Overlap_object):
 			x=E,
 			y=n,
 			extent=result["extent"], 
-			output_name="all_solutions_{}".format(key))
+			output_name="all_solutions_{}".format(key),
+			margin_color="gray")
 
 
-if parameters["plot_overlap"]:
-	generate_overlap(Overlap_object=Overlap)
-if parameters["plot_all_non_zero"]:
-	plot_all_non_zero(Overlap_object=Overlap)
+generate_overlap(Overlap_object=Overlap)
+plot_all_non_zero(Overlap_object=Overlap)
 
 
+print("Done!")
 
