@@ -36,6 +36,9 @@ def generate_overlap(Overlap_object):
 	# and generate heatmaps.
 	# --------------------------
 	heatmaps = retrieve_data()
+
+	# Get the extent, xedges and yedges.
+	# ----------------------------------
 	i = 0
 	for key, result in heatmaps.items():
 		if i == 0:

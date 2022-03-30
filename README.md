@@ -27,3 +27,13 @@ This README would normally document whatever steps are necessary to get your app
 
 * Repo owner or admin
 * Other community or team contact
+
+# Running the code #
+
+### Run the ct-analyzer ### 
+
+    python3 masterscript parameters.yaml
+
+### Determine overlaps between solution sets ###
+
+    python3 calculate_overlap.py overlap_parameters.yaml
