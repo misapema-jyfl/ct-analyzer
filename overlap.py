@@ -142,8 +142,10 @@ class Overlap(object):
 
 
 
-	def plot_heatmap(self, histogram_data, x, y, extent, output_name):
+	def plot_heatmap(self, histogram_data, x, y, extent, output_name,
+		margin_color, cbar_type="continuous"):
 		"""
+		cbar_type: Either "continuous" or "binary"
 		"""
 
 		# Generate the figure
@@ -181,23 +183,28 @@ class Overlap(object):
 		E_limits = self.parameters["limits"]["E"]
 		Ebins = self.parameters["bins"]
 		E_scale = "log"
-		E_color = self.parameters["margin_color"]
+		# E_color = self.parameters["margin_color"]
 
 		# Electron density axis
 		n_limits = self.parameters["limits"]["n"]
 		nbins = self.parameters["bins"]
 		n_scale = "log"
-		n_color = self.parameters["margin_color"]
+		# n_color = self.parameters["margin_color"]
 		# ----------------------------------------------
 
 
 
 		# Plot the heatmap
 		# ----------------
+		if cbar_type == "continuous":
+			cmap = cm.gist_heat
+		elif cbar_type == "binary":
+			cmap = cm.get_cmap("gist_heat", 2)
+
 		img = histogram_data.T
 		ax1 = fig.add_axes([mainx, mainy, mainw, mainh])
 		im = plt.imshow(img, origin="lower",
-		          cmap = cm.gist_heat,
+		          cmap = cmap,
 		          extent = extent,
 		          aspect = "auto",
 		          interpolation = "none")
@@ -208,7 +215,7 @@ class Overlap(object):
 		# Plot x-projection histogram
 		# ---------------------------
 		xmarg = fig.add_axes([xmargx, xmargy, xmargw, xmargh])
-		xmarg.hist(x, bins=Ebins, color=E_color, density=True)
+		xmarg.hist(x, bins=Ebins, color=margin_color, density=True)
 		xmarg.set(xlim=(E_limits[0], E_limits[1]))
 		xmarg.set(xscale=E_scale)
 		xmarg.spines["left"].set_visible(False)
@@ -223,7 +230,7 @@ class Overlap(object):
 		# Plot y-projection histogram
 		# ---------------------------
 		ymarg = fig.add_axes([ymargx, ymargy, ymargw, ymargh])
-		ymarg.hist(y, bins=nbins, orientation="horizontal", color=n_color, density=True)
+		ymarg.hist(y, bins=nbins, orientation="horizontal", color=margin_color, density=True)
 		ymarg.set(ylim=(n_limits[0], n_limits[1]))
 		ymarg.set(yscale=n_scale)
 		ymarg.spines["top"].set_visible(False)
@@ -238,7 +245,11 @@ class Overlap(object):
 		# Plot the colorbar
 		# ---------------------------
 		cbax = fig.add_axes([cbaxx, cbaxy, cbaxw, cbaxh])
-		plt.colorbar(im, cax=cbax, orientation="horizontal")
+		if cbar_type == "continuous":
+			plt.colorbar(im, cax=cbax, orientation="horizontal")	
+		elif cbar_type == "binary":
+			plt.colorbar(im, cax=cbax, orientation="horizontal",
+				ticks = [0,1])	
 		# ---------------------------
 
 
