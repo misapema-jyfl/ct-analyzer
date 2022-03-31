@@ -26,6 +26,91 @@ class Plotting(object):
         super(Plotting, self).__init__()
         self.parameters = parameters
 
+    def find_confidence_interval(self, list_of_values, condition_percentage):
+        '''
+        Seek the lower and upper limit in a list of values, which enclose 
+        between themselves and the median a given percentage of all values 
+        in the list. 
+        
+    
+        Parameters
+        ----------
+        list_of_values : list
+            List of the values, for which the analysis will be carried out.
+        condition_percentage : float
+            The percentage limit.
+    
+        Returns
+        -------
+        x_lo : float
+            Lower limit.
+        median : float
+            Median value.
+        x_hi : float
+            Upper limit.
+    
+        '''
+        xs = list_of_values
+        p = condition_percentage
+        
+        if not xs.size > 0:
+            # print("Given list of values is empty!")
+            return 0, 0, 0
+        
+        else:
+            median = np.median(xs)
+            
+            percentages = []
+            x_his = []
+            for x in xs:
+                if x > median:
+                    # Select elements between current element and median
+                    interval = xs[(xs<=x)&(xs>=median)]
+                    # Calculate percentage of all values within current interval
+                    percentage = (len(interval))/len(xs)
+                    # If this interval satisfies the condition, add it to list
+                    if percentage >= p:
+                        percentages.append(percentage)
+                        x_his.append(x)
+            # Find the minimum percentage satisfying the condition
+            # along with the corresponding element.
+            percentages=np.array(percentages)
+            
+            if not percentages.size > 0:
+                print("There are no elements within the confidence interval!")
+                x_hi = 0
+            else:    
+                result = np.where(percentages==min(percentages))
+                idx = result[0][0]
+                x_hi = x_his[idx]
+            
+            # Find value x_lo, for which p fraction of all results are between 
+            # it and the median
+            percentages = []
+            x_los = []
+            for x in xs:
+                if x < median:
+                    # Select elements between current element and median
+                    interval = xs[(xs>=x)&(xs<=median)]
+                    # Calculate percentage of all values within current interval
+                    percentage = (len(interval))/len(xs)
+                    # If this interval satisfies the condition, add it to list
+                    if percentage >= p:
+                        percentages.append(percentage)
+                        x_los.append(x)
+            # Find the minimum percentage satisfying the condition
+            # along with the corresponding element.
+            percentages=np.array(percentages)
+            if not percentages.size > 0:
+                print("There are no elements within the confidence interval!")
+                x_lo = 0
+            else:    
+                result = np.where(percentages==min(percentages))
+                idx = result[0][0]
+                x_lo = x_los[idx]
+        
+        return x_lo, median, x_hi
+
     def determine_max_and_min(self, array):
         """
         Determines the maximum and minimum value 
@@ -152,10 +237,41 @@ class Plotting(object):
         df = self.get_solution_set(charge_state)
         df = self.set_limits(df)
 
+
         if not len(df) == 0:
 
             x = df["E"]
             y = df["n"]
+
+            # Calculate the lo_err, median and hi_err
+            # for the n and <E> values
+            # output to .csv
+            # ---------------------------------------
+            df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
+                    index=["n", "E"])
+            # n
+            data = np.array(y)
+            lo, median, hi = self.find_confidence_interval(list_of_values=data, condition_percentage=0.341)
+            lo_err = median-lo
+            hi_err = hi-median
+            df_tmp["lo_err"]["n"] = lo_err
+            df_tmp["median"]["n"] = median
+            df_tmp["hi_err"]["n"] = hi_err
+
+            # E
+            data = np.array(x)
+            lo, median, hi = self.find_confidence_interval(list_of_values=data, condition_percentage=0.341)
+            lo_err = median-lo
+            hi_err = hi-median
+            df_tmp["lo_err"]["E"] = lo_err
+            df_tmp["median"]["E"] = median
+            df_tmp["hi_err"]["E"] = hi_err
+
+            # Output the result
+            path = self.parameters["results_directory"]
+            element = self.parameters["injected_species"]
+            df_tmp.to_csv(path + "result_nE_{}{}+.csv".format(element, str(charge_state)))
+            # ---------------------------------------
 
             # Heatmap data
             # -------------------------------------------------------------------
@@ -171,7 +287,7 @@ class Plotting(object):
             heatmap, xedges, yedges = np.histogram2d(
                 x=x,
                 y=y,
-                bins=1000,
+                bins=self.parameters["plotting"]["heatmap_bins"],
                 range=rng,
                 density=True
                 )
@@ -182,7 +298,7 @@ class Plotting(object):
             # Sigma controls 'coarseness' of heatmap:
             # larger -> smoother
             # smaller -> coarser
-            heatmap = gaussian_filter(heatmap, sigma=5) 
+            heatmap = gaussian_filter(heatmap, sigma=self.parameters["plotting"]["sigma"]) 
 
             # Normalize the heatmap
             # ---------------------
@@ -231,13 +347,13 @@ class Plotting(object):
             cbaxh = 0.02
 
             # Energy-axis
-            Ebins = 100
+            Ebins = self.parameters["plotting"]["heatmap_bins"]
             bool_E_log = False
             E_scale = "log"
             E_color = "crimson"
 
             # Electron density axis
-            nbins = 100
+            nbins = self.parameters["plotting"]["heatmap_bins"]
             bool_n_log = False
             n_scale = "log"
             n_color = "crimson"
@@ -326,7 +442,6 @@ class Plotting(object):
             print("  Error: No valid solutions in dataset!")
             print("  Characteristic values will be set to 0.")
             print("  Skipping charge state...")
-            
 
 
     def plot_solution_sets(self, charge_states):
@@ -401,90 +516,7 @@ class Plotting(object):
 
 
 
-    def find_confidence_interval(self, list_of_values, condition_percentage):
-        '''
-        Seek the lower and upper limit in a list of values, which enclose 
-        between themselves and the median a given percentage of all values 
-        in the list. 
-        
     
-        Parameters
-        ----------
-        list_of_values : list
-            List of the values, for which the analysis will be carried out.
-        condition_percentage : float
-            The percentage limit.
-    
-        Returns
-        -------
-        x_lo : float
-            Lower limit.
-        median : float
-            Median value.
-        x_hi : float
-            Upper limit.
-    
-        '''
-        xs = list_of_values
-        p = condition_percentage
-        
-        if not xs.size > 0:
-            # print("Given list of values is empty!")
-            return 0, 0, 0
-        
-        else:
-            median = np.median(xs)
-            
-            percentages = []
-            x_his = []
-            for x in xs:
-                if x > median:
-                    # Select elements between current element and median
-                    interval = xs[(xs<=x)&(xs>=median)]
-                    # Calculate percentage of all values within current interval
-                    percentage = (len(interval))/len(xs)
-                    # If this interval satisfies the condition, add it to list
-                    if percentage >= p:
-                        percentages.append(percentage)
-                        x_his.append(x)
-            # Find the minimum percentage satisfying the condition
-            # along with the corresponding element.
-            percentages=np.array(percentages)
-            
-            if not percentages.size > 0:
-                print("There are no elements within the confidence interval!")
-                x_hi = 0
-            else:    
-                result = np.where(percentages==min(percentages))
-                idx = result[0][0]
-                x_hi = x_his[idx]
-            
-            # Find value x_lo, for which p fraction of all results are between 
-            # it and the median
-            percentages = []
-            x_los = []
-            for x in xs:
-                if x < median:
-                    # Select elements between current element and median
-                    interval = xs[(xs>=x)&(xs<=median)]
-                    # Calculate percentage of all values within current interval
-                    percentage = (len(interval))/len(xs)
-                    # If this interval satisfies the condition, add it to list
-                    if percentage >= p:
-                        percentages.append(percentage)
-                        x_los.append(x)
-            # Find the minimum percentage satisfying the condition
-            # along with the corresponding element.
-            percentages=np.array(percentages)
-            if not percentages.size > 0:
-                print("There are no elements within the confidence interval!")
-                x_lo = 0
-            else:    
-                result = np.where(percentages==min(percentages))
-                idx = result[0][0]
-                x_lo = x_los[idx]
-        
-        return x_lo, median, x_hi
 
 
     def plot_characteristic_times(self, charge_states):
@@ -601,6 +633,7 @@ class Plotting(object):
             df["medians"] = medians
             df["hi_errs"] = hi_errs
             df.to_csv(path + outputname + ".csv", index=None)
+
 
 
 

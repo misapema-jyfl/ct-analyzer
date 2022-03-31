@@ -1,5 +1,5 @@
 working_directory: "/home/miha/Work/codes/ct-analyzer/"
-results_directory: "/home/miha/Work/codes/ct-analyzer/test/results/"
+results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/Analysis_3/k/"
 injected_species: "k" # Lower case! Element abbreviation (e.g. Potassium -> "k", Sodium -> "na")
 measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
 
@@ -45,10 +45,12 @@ optimize_nE:
 
 plotting:
   do: 1
+  heatmap_bins: 200
+  sigma: 0
   confidence: 0.341
-  average_energy_limits: [0,0] # Set [lower, upper] limits of (n,E)-points to consider.
-  electron_density_limits: [0,0] # Use [0,0] for default limits.
+  average_energy_limits: [10,10000] # Set [lower, upper] limits of (n,E)-points to consider.
+  electron_density_limits: [1E11,2.61E12] # Use [0,0] for default limits.
   penalty_function_upper_limit: 1E-6
   advanced:
-    override_charge_states: 1
-    charge_states: [5,6,7,8,9,10]
+    override_charge_states: 0
+    charge_states: [3,4,5,6,7]

@@ -203,7 +203,7 @@ def generate_overlap(Overlap_object):
 		# of the characteristic values within the overlap.
 		# ------------------------------------------------
 		df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
-			index=["tau", "inz_time", "cx_time", "eC", "F"])
+			index=["tau", "inz_time", "cx_time", "eC", "F", "n", "E"])
 		for characteristic_key, data in result.items():
 			
 			data = np.array(data)
@@ -245,6 +245,31 @@ def generate_overlap(Overlap_object):
 			output_name=key,
 			margin_color="crimson")
 	print("--------------------------------------")
+
+	# Determine the median, lo_err and hi_err
+	# of all the (n,E) pairs within the overlap
+	df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
+			index=["n", "E"])
+	# n
+	data = np.array(y)
+	lo, median, hi = find_confidence_interval(list_of_values=data, condition_percentage=0.341)
+	lo_err = median-lo
+	hi_err = hi-median
+	df_tmp["lo_err"]["n"] = lo_err
+	df_tmp["median"]["n"] = median
+	df_tmp["hi_err"]["n"] = hi_err
+
+	# E
+	data = np.array(x)
+	lo, median, hi = find_confidence_interval(list_of_values=data, condition_percentage=0.341)
+	lo_err = median-lo
+	hi_err = hi-median
+	df_tmp["lo_err"]["E"] = lo_err
+	df_tmp["median"]["E"] = median
+	df_tmp["hi_err"]["E"] = hi_err
+
+	# Output the result
+	df_tmp.to_csv(outDir + "overlap_nE.csv")
 
 	print("\nOverlap boundaries:")
 	print("--------------------------------------")
