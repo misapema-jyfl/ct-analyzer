@@ -15,6 +15,10 @@ pathToParameterFile = sys.argv[1]
 parameters = yaml.safe_load(open(pathToParameterFile)) 
 Overlap = overlap.Overlap(parameters)
 
+print("\nOverlap of:")
+for key, arg in parameters["datasets"].items():
+	print(key)
+
 print("\nParameters:")
 print("--------------------------------------")
 print("bins: ", parameters["bins"])
