@@ -7,7 +7,14 @@ import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter
 from matplotlib import cm
 import matplotlib
+import sys
 
+# Set font for plots
+font = {'family' : 'sans-serif',
+        'weight' : 'normal',
+        'size'   : 15}
+
+matplotlib.rc('font', **font)
 
 
 def determine_max_and_min(array):
@@ -41,9 +48,13 @@ class Overlap(object):
 		Normalizes an NxN array to unity.
 		"""
 		maximum_value, minimum_value = determine_max_and_min(array)
+		if maximum_value == 0:
+			print("\nThe overlap is empty! Exiting.")
+			sys.exit()
 		for i in range(len(array)):
-			for j in range(len(array)):
+			for j in range(len(array)):	
 				array[i][j] = array[i][j]/maximum_value
+				
 
 		return array
 

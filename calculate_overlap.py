@@ -15,6 +15,10 @@ pathToParameterFile = sys.argv[1]
 parameters = yaml.safe_load(open(pathToParameterFile)) 
 Overlap = overlap.Overlap(parameters)
 
+print("\nOverlap of:")
+for key, arg in parameters["datasets"].items():
+	print(key)
+
 print("\nParameters:")
 print("--------------------------------------")
 print("bins: ", parameters["bins"])
@@ -202,17 +206,29 @@ def generate_overlap(Overlap_object):
 			index=["tau", "inz_time", "cx_time", "eC", "F"])
 		for characteristic_key, data in result.items():
 			
+			data = np.array(data)
+
 			# If the data corresponds to inz_rate or cx_rate,
 			# convert it to inz_time and cx_time instead.
+			# Note also conversion s -> ms.
+			# -----------------------------------------------
 			if characteristic_key == "inz_rate" or characteristic_key == "cx_rate":
-				data = data**(-1)
+				# data = np.power(data, (-1)*np.ones(len(data)))
+				data = 1e3*data**(-1)
+			if characteristic_key == "tau":
+				data = 1e3*data
+			if characteristic_key == "inz_rate":
+				characteristic_key = "inz_time"
+			if characteristic_key == "cx_rate":
+				characteristic_key = "cx_time"
 
-			lo, median, hi = find_confidence_interval(list_of_values=np.array(data), condition_percentage=0.341)
+			lo, median, hi = find_confidence_interval(list_of_values=data, condition_percentage=0.341)
 			lo_err = median-lo
 			hi_err = hi-median
 			df_tmp["lo_err"][characteristic_key] = lo_err
 			df_tmp["median"][characteristic_key] = median
 			df_tmp["hi_err"][characteristic_key] = hi_err
+			
 		df_tmp.to_csv(outDir + "overlap_results_" + key + ".csv")
 
 		[y.append(n) for n in n]
