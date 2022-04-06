@@ -1,13 +1,11 @@
 # Results directory
-results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/overlap_analysis/na-k/overlap_using_data_from_analysis_3/"
+results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K/o-39-k-9-10/"
 
 # Paths to datasets
 # use keys e.g. na-6+, k-9+, etc.
 datasets: {
-"k-9+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/overlap_analysis/na-k/overlap_using_data_from_analysis_3/solution_set_k9+.csv",
-"k-10+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/overlap_analysis/na-k/overlap_using_data_from_analysis_3/solution_set_k10+.csv",
-# "na-6+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/overlap_analysis/na-k/overlap_using_data_from_analysis_3/solution_set_na6+.csv",
-"na-7+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/overlap_analysis/na-k/overlap_using_data_from_analysis_3/solution_set_na7+.csv"
+"39-k-9+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K/o-39-k-9-10/solution_set_k9+.csv",
+"39-k-10+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K/o-39-k-9-10/solution_set_k10+.csv"
 }
 
 
