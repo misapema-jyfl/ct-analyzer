@@ -615,7 +615,16 @@ class Plotting(object):
                 color=marker_color,
                 label=lbl,
                 markersize=13
-                )        
+                )
+            if self.parameters["plotting"]["plot_characteristic_minima"]:
+                ax.scatter(
+                    x=np.array(charge_states),
+                    y=minimums,
+                    marker=marker,
+                    color=marker_color,
+                    facecolors="none",
+                    markersizer=13
+                    )
             N = charge_states[-1] - charge_states[0] + 1
             xticks = [int(x) for x in np.linspace(charge_states[0], charge_states[-1], N)]
             ax.set_xlabel("Charge state")

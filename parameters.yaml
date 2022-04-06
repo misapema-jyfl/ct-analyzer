@@ -48,9 +48,10 @@ plotting:
   heatmap_bins: 200
   sigma: 0
   confidence: 0.341
-  average_energy_limits: [10,10000] # Set [lower, upper] limits of (n,E)-points to consider.
+  average_energy_limits: [10,10000] # Set [lower, upper] limits of (n,E)-plotting.
   electron_density_limits: [1E11,2.61E12] # Use [0,0] for default limits.
   penalty_function_upper_limit: 1E-6
+  plot_characteristic_minima: 1 
   advanced:
     override_charge_states: 0
     charge_states: [3,4,5,6,7]
