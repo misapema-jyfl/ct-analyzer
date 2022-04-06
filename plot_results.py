@@ -185,7 +185,7 @@ class Plotting(object):
         # density is desired.
         if type(n_limits[1]) == list:
             f = float(n_limits[1][1])
-            n_limits[1] = self.calculate_cutoff_density(f)
+            n_hi = self.calculate_cutoff_density(f)
         elif n_limits[1] == 0:
             n_hi = np.float(1E13)
         else:
