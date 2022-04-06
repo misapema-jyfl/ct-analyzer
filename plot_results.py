@@ -529,6 +529,9 @@ class Plotting(object):
 
         for key in keys:
 
+            if self.parameters["plotting"]["advanced"]["skip"][key]:
+                continue
+
             lo_errs = []
             hi_errs = []
             medians = []
