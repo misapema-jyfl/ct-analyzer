@@ -247,7 +247,7 @@ class Plotting(object):
             # for the n and <E> values
             # output to .csv
             # ---------------------------------------
-            df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
+            df_tmp = pd.DataFrame(columns=["minimum", "lo_err", "median", "hi_err", "maximum"], 
                     index=["n", "E"])
             # n
             data = np.array(y)
@@ -257,6 +257,8 @@ class Plotting(object):
             df_tmp["lo_err"]["n"] = lo_err
             df_tmp["median"]["n"] = median
             df_tmp["hi_err"]["n"] = hi_err
+            df_tmp["minimum"]["n"] = min(data)
+            df_tmp["maximum"]["n"] = max(data)
 
             # E
             data = np.array(x)
@@ -266,6 +268,8 @@ class Plotting(object):
             df_tmp["lo_err"]["E"] = lo_err
             df_tmp["median"]["E"] = median
             df_tmp["hi_err"]["E"] = hi_err
+            df_tmp["minimum"]["E"] = min(data)
+            df_tmp["maximum"]["E"] = max(data)
 
             # Output the result
             path = self.parameters["results_directory"]
