@@ -1,7 +1,7 @@
 working_directory: "/home/miha/Work/codes/ct-analyzer/"
-results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/Analysis_3/k/"
+results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/tmp/"
 injected_species: "k" # Lower case! Element abbreviation (e.g. Potassium -> "k", Sodium -> "na")
-measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
+measured_charge_states: [4,5,6,7,8,9,10,11,12,13]
 
 parse_raw_data:
   do: 0
@@ -53,5 +53,5 @@ plotting:
   penalty_function_upper_limit: 1E-6
   plot_characteristic_minima: 1 
   advanced:
-    override_charge_states: 0
-    charge_states: [3,4,5,6,7]
+    override_charge_states: 1
+    charge_states: [8,9,10,11]

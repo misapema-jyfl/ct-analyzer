@@ -623,7 +623,7 @@ class Plotting(object):
                     marker=marker,
                     color=marker_color,
                     facecolors="none",
-                    markersizer=13
+                    s=64
                     )
             N = charge_states[-1] - charge_states[0] + 1
             xticks = [int(x) for x in np.linspace(charge_states[0], charge_states[-1], N)]
