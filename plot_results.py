@@ -531,7 +531,9 @@ class Plotting(object):
 
             lo_errs = []
             hi_errs = []
-            medians = [] 
+            medians = []
+            minimums = []
+            maximums = [] 
 
             # Create the figure
             fig, ax = plt.subplots()
@@ -597,6 +599,8 @@ class Plotting(object):
                 lo_errs.append(lo_err)
                 hi_errs.append(hi_err)
                 medians.append(median)
+                minimums.append(min(data))
+                maximums.append(max(data))
 
             # Plot the data
             ax.errorbar(
@@ -632,6 +636,8 @@ class Plotting(object):
             df["lo_errs"] = lo_errs
             df["medians"] = medians
             df["hi_errs"] = hi_errs
+            df["minimums"] = minimums
+            df["maximums"] = maximums
             df.to_csv(path + outputname + ".csv", index=None)
 
 

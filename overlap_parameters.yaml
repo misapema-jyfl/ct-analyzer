@@ -4,7 +4,7 @@ results_directory: "/home/miha/Work/codes/test/"
 # Paths to datasets
 # use keys e.g. na-6+, k-9+, etc.
 datasets: {
-"39-k-9+" : "/home/miha/Work/codes/test/solution_set_39k9+.csv"
+"39-k-9+" : "/home/miha/Work/codes/test/solution_set_39k9+.csv",
 "41-k-9+" : "/home/miha/Work/codes/test/solution_set_41k9+.csv"
 }
 
