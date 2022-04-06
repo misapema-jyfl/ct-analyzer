@@ -1,13 +1,12 @@
 # Results directory
-results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K/o-39-k-9-10/"
+results_directory: "/home/miha/Work/codes/test/"
 
 # Paths to datasets
 # use keys e.g. na-6+, k-9+, etc.
 datasets: {
-"39-k-9+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K/o-39-k-9-10/solution_set_k9+.csv",
-"39-k-10+": "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/39-K/o-39-k-9-10/solution_set_k10+.csv"
+"39-k-9+" : "/home/miha/Work/codes/test/solution_set_39k9+.csv"
+"41-k-9+" : "/home/miha/Work/codes/test/solution_set_41k9+.csv"
 }
-
 
 # Plotting limits
 limits: {"F":1E-6,

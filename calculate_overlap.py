@@ -149,13 +149,14 @@ def generate_overlap(Overlap_object):
 
 
 	# Multiply heatmaps by one another
+	# to obtain the overlap
 	# --------------------------------
 	N = parameters["bins"]
 	overlap_heatmap = np.ones((N,N))
 	for key, arg in heatmaps.items():
 		overlap_heatmap = np.multiply(overlap_heatmap, arg["heatmap"]) 
 
-	# Set negligible values to zero
+	# Set values below threshold to zero
 	# in the overlap set.
 	# Normalize the heatmap.
 	# -----------------------------------
