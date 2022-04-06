@@ -648,11 +648,11 @@ class Plotting(object):
 
             # Output the data to .csv
             df = pd.DataFrame()
+            df["minimums"] = minimums
             df["charge_state"] = charge_states
             df["lo_errs"] = lo_errs
             df["medians"] = medians
             df["hi_errs"] = hi_errs
-            df["minimums"] = minimums
             df["maximums"] = maximums
             df.to_csv(path + outputname + ".csv", index=None)
 
