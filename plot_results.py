@@ -26,6 +26,20 @@ class Plotting(object):
         super(Plotting, self).__init__()
         self.parameters = parameters
 
+    def calculate_cutoff_density(self, f):
+        '''
+        Calculates the cut-off density for frequency 'f' microwaves.
+        Use units of Hz for f.
+
+        Returns the cutoff density in units of 1/cm3.
+        '''
+        eps0 = 8.8542e-12
+        e = 1.6021773e-19
+        me = 9.10938356e-31
+        cutoff = eps0*me*(2*np.pi*f)**2/e**2
+        cutoff *= 1e-6 # Conversion to cm-3
+        return cutoff
+
     def find_confidence_interval(self, list_of_values, condition_percentage):
         '''
         Seek the lower and upper limit in a list of values, which enclose 
@@ -165,7 +179,14 @@ class Plotting(object):
             n_lo = np.float(1E10)
         else:
             n_lo = np.float(n_limits[0])
-        if n_limits[1] == 0:
+        
+        # If the upper limit is passed as a list,
+        # assume that a calculation of the cutoff
+        # density is desired.
+        if type(n_limits[1]) == list:
+            f = float(n_limits[1][1])
+            n_limits[1] = self.calculate_cutoff_density(f)
+        elif n_limits[1] == 0:
             n_hi = np.float(1E13)
         else:
             n_hi = np.float(n_limits[1])
@@ -648,8 +669,8 @@ class Plotting(object):
 
             # Output the data to .csv
             df = pd.DataFrame()
-            df["minimums"] = minimums
             df["charge_state"] = charge_states
+            df["minimums"] = minimums
             df["lo_errs"] = lo_errs
             df["medians"] = medians
             df["hi_errs"] = hi_errs
