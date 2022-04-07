@@ -67,8 +67,6 @@ class Overlap(object):
 
 	    # Apply the limits
 	    df = df[df["F"]<limits["F"]]
-	    # df = df[(df["n"]<limits["n"][1])&(df["n"]>limits["n"][0])] # Meaningless in this context
-	    # df = df[(df["E"]<limits["E"][1])&(df["E"]>limits["E"][0])] 
 
 	    return df
 
@@ -109,7 +107,7 @@ class Overlap(object):
 		return result
 
 	def find_solutions_in_overlap(self, df, xedges, yedges,
-	 overlap_heatmap):
+	 overlap_heatmap, acceptance_threshold):
 		"""
 		Checks each bin defined by xedges and yedges,
 		and finds solutions that fall within said bin.
@@ -128,9 +126,11 @@ class Overlap(object):
 			for j in range(len(yedges)-1):
 				n_lo = yedges[j]
 				n_hi = yedges[j+1]
-				if overlap_heatmap[i][j] > 0:
-					c = (df["E"]>E_lo)&(df["E"]<E_hi)&(df["n"]>n_lo)&(df["n"]<n_hi)
-					df_tmp = df[c]
+				if overlap_heatmap[i][j] > acceptance_threshold:
+					# c = ((df["E"]>E_lo) & (df["E"]<E_hi) & (df["n"]>n_lo) & (df["n"]<n_hi))
+					# df_tmp = df[c]
+
+					df_tmp = df.query( 'E > @E_lo and E < @E_hi and n > @n_lo and n < @n_hi' )
 
 					E = df_tmp["E"]
 					n = df_tmp["n"]

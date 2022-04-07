@@ -179,20 +179,21 @@ def generate_overlap(Overlap_object):
 	print("--------------------------------------")
 	x, y = [], [] # lists for generating margin histograms
 	for key, arg in parameters["datasets"].items():
-		df = pd.read_csv(arg)
+		df = Overlap.set_limits(pd.read_csv(arg))
 		result = Overlap.find_solutions_in_overlap(
 			df, 
 			xedges=xedges, 
 			yedges=yedges, 
-			overlap_heatmap=overlap_heatmap)
+			overlap_heatmap=overlap_heatmap,
+			acceptance_threshold=float(parameters["acceptance_threshold"]))
 		
 		n = result["n"]
 		E = result["E"]
-		tau = result["tau"]
-		inz_rate = result["inz_rate"]
-		cx_rate = result["cx_rate"]
-		eC = result["eC"]
-		F = result["F"]
+		# tau = result["tau"]
+		# inz_rate = result["inz_rate"]
+		# cx_rate = result["cx_rate"]
+		# eC = result["eC"]
+		# F = result["F"]
 
 		# Save the overlap dataframe
 		# --------------------------
@@ -201,7 +202,7 @@ def generate_overlap(Overlap_object):
 		df_tmp.to_csv(outDir + "overlap_df_" + key + ".csv", index=None)
 
 		# Determine the medians, lo_err and hi_err
-		# and minimaof the characteristic values 
+		# and minima of the characteristic values 
 		# within the overlap.
 		# ------------------------------------------------
 		df_tmp = pd.DataFrame(columns=["minimum", "lo_err", "median", "hi_err", "maximum"], 
