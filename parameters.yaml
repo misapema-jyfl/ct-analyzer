@@ -1,7 +1,7 @@
 working_directory: "/home/miha/Work/codes/ct-analyzer/"
-results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-10-01_Na-K/Analysis_3/k/"
+results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/Analysis_3/41-K/"
 injected_species: "k" # Lower case! Element abbreviation (e.g. Potassium -> "k", Sodium -> "na")
-measured_charge_states: [3,4,5,6,7,8,9,10,11,12]
+measured_charge_states: [4,5,6,7,8,9,10,11,12,13]
 
 parse_raw_data:
   do: 0
@@ -48,9 +48,14 @@ plotting:
   heatmap_bins: 200
   sigma: 0
   confidence: 0.341
-  average_energy_limits: [10,10000] # Set [lower, upper] limits of (n,E)-points to consider.
-  electron_density_limits: [1E11,2.61E12] # Use [0,0] for default limits.
+  average_energy_limits: [10,10000] # Set [lower, upper] limits of (n,E)-plotting.
+  electron_density_limits: [1E11,['cutoff', 14.5E9]] # Use [0,0] for default limits.
   penalty_function_upper_limit: 1E-6
-  advanced:
-    override_charge_states: 0
-    charge_states: [3,4,5,6,7]
+  plot_characteristic_minima: 1 
+  advanced: # Set everything below this line to 0 by default.
+    skip: # If you want to skip plotting some values.
+      confinement_time: 1
+      charge_exchange_time: 0
+      ionization_time: 1
+    override_charge_states: 1
+    charge_states: [8,9,10,11]

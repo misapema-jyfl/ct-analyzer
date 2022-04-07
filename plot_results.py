@@ -26,6 +26,20 @@ class Plotting(object):
         super(Plotting, self).__init__()
         self.parameters = parameters
 
+    def calculate_cutoff_density(self, f):
+        '''
+        Calculates the cut-off density for frequency 'f' microwaves.
+        Use units of Hz for f.
+
+        Returns the cutoff density in units of 1/cm3.
+        '''
+        eps0 = 8.8542e-12
+        e = 1.6021773e-19
+        me = 9.10938356e-31
+        cutoff = eps0*me*(2*np.pi*f)**2/e**2
+        cutoff *= 1e-6 # Conversion to cm-3
+        return cutoff
+
     def find_confidence_interval(self, list_of_values, condition_percentage):
         '''
         Seek the lower and upper limit in a list of values, which enclose 
@@ -165,7 +179,14 @@ class Plotting(object):
             n_lo = np.float(1E10)
         else:
             n_lo = np.float(n_limits[0])
-        if n_limits[1] == 0:
+        
+        # If the upper limit is passed as a list,
+        # assume that a calculation of the cutoff
+        # density is desired.
+        if type(n_limits[1]) == list:
+            f = float(n_limits[1][1])
+            n_hi = self.calculate_cutoff_density(f)
+        elif n_limits[1] == 0:
             n_hi = np.float(1E13)
         else:
             n_hi = np.float(n_limits[1])
@@ -247,7 +268,7 @@ class Plotting(object):
             # for the n and <E> values
             # output to .csv
             # ---------------------------------------
-            df_tmp = pd.DataFrame(columns=["lo_err", "median", "hi_err"], 
+            df_tmp = pd.DataFrame(columns=["minimum", "lo_err", "median", "hi_err", "maximum"], 
                     index=["n", "E"])
             # n
             data = np.array(y)
@@ -257,6 +278,8 @@ class Plotting(object):
             df_tmp["lo_err"]["n"] = lo_err
             df_tmp["median"]["n"] = median
             df_tmp["hi_err"]["n"] = hi_err
+            df_tmp["minimum"]["n"] = min(data)
+            df_tmp["maximum"]["n"] = max(data)
 
             # E
             data = np.array(x)
@@ -266,6 +289,8 @@ class Plotting(object):
             df_tmp["lo_err"]["E"] = lo_err
             df_tmp["median"]["E"] = median
             df_tmp["hi_err"]["E"] = hi_err
+            df_tmp["minimum"]["E"] = min(data)
+            df_tmp["maximum"]["E"] = max(data)
 
             # Output the result
             path = self.parameters["results_directory"]
@@ -529,9 +554,14 @@ class Plotting(object):
 
         for key in keys:
 
+            if self.parameters["plotting"]["advanced"]["skip"][key]:
+                continue
+
             lo_errs = []
             hi_errs = []
-            medians = [] 
+            medians = []
+            minimums = []
+            maximums = [] 
 
             # Create the figure
             fig, ax = plt.subplots()
@@ -597,6 +627,8 @@ class Plotting(object):
                 lo_errs.append(lo_err)
                 hi_errs.append(hi_err)
                 medians.append(median)
+                minimums.append(min(data))
+                maximums.append(max(data))
 
             # Plot the data
             ax.errorbar(
@@ -611,7 +643,16 @@ class Plotting(object):
                 color=marker_color,
                 label=lbl,
                 markersize=13
-                )        
+                )
+            if self.parameters["plotting"]["plot_characteristic_minima"]:
+                ax.scatter(
+                    x=np.array(charge_states),
+                    y=minimums,
+                    marker=marker,
+                    color=marker_color,
+                    facecolors="none",
+                    s=64
+                    )
             N = charge_states[-1] - charge_states[0] + 1
             xticks = [int(x) for x in np.linspace(charge_states[0], charge_states[-1], N)]
             ax.set_xlabel("Charge state")
@@ -629,9 +670,11 @@ class Plotting(object):
             # Output the data to .csv
             df = pd.DataFrame()
             df["charge_state"] = charge_states
+            df["minimums"] = minimums
             df["lo_errs"] = lo_errs
             df["medians"] = medians
             df["hi_errs"] = hi_errs
+            df["maximums"] = maximums
             df.to_csv(path + outputname + ".csv", index=None)
 
 
