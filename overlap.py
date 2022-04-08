@@ -37,7 +37,7 @@ class Overlap(object):
 				self.parameters["limits"][key] = np.float(arg)
 			elif type(arg) == list:
 				self.parameters["limits"][key] = [np.float(a) for a in arg]
-		self.parameters["acceptance_threshold"] = np.float(self.parameters["acceptance_threshold"])
+		# self.parameters["acceptance_threshold"] = np.float(self.parameters["acceptance_threshold"])
 		# self.parameters["limits"]["E"][0] = np.float(self.parameters["limits"]["E"][0])
 		# self.parameters["limits"]["E"][-1] = np.float(self.parameters["limits"]["E"][-1])
 		# self.parameters["limits"]["n"][0] = np.float(self.parameters["limits"]["n"][0])
@@ -107,7 +107,7 @@ class Overlap(object):
 		return result
 
 	def find_solutions_in_overlap(self, df, xedges, yedges,
-	 overlap_heatmap, acceptance_threshold):
+	 overlap_heatmap):
 		"""
 		Checks each bin defined by xedges and yedges,
 		and finds solutions that fall within said bin.
@@ -126,7 +126,7 @@ class Overlap(object):
 			for j in range(len(yedges)-1):
 				n_lo = yedges[j]
 				n_hi = yedges[j+1]
-				if overlap_heatmap[i][j] > acceptance_threshold:
+				if overlap_heatmap[i][j] > 0:
 					# c = ((df["E"]>E_lo) & (df["E"]<E_hi) & (df["n"]>n_lo) & (df["n"]<n_hi))
 					# df_tmp = df[c]
 
@@ -165,10 +165,10 @@ class Overlap(object):
 		For visualizing the regions where any number 
 		of solutions exist.
 		"""
-		acceptanceThreshold = self.parameters["acceptance_threshold"]
+		acceptanceThreshold = 0
 		for i, row in enumerate(histogram_data):
 			for j, element in enumerate(row):
-				if element < acceptanceThreshold:
+				if element <= acceptanceThreshold:
 					histogram_data[i][j] = 0
 				else:
 					histogram_data[i][j] = 1

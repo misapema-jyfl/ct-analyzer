@@ -23,7 +23,7 @@ print("\nParameters:")
 print("--------------------------------------")
 print("bins: ", parameters["bins"])
 print("sigma: ", parameters["sigma"])
-print("acceptance_threshold: {:.2e}".format(parameters["acceptance_threshold"]))
+# print("acceptance_threshold: {:.2e}".format(parameters["acceptance_threshold"])) LEGACY
 print("--------------------------------------\n")
 
 
@@ -157,15 +157,14 @@ def generate_overlap(Overlap_object):
 		overlap_heatmap = np.multiply(overlap_heatmap, arg["heatmap"]) 
 
 	# Set values below threshold to zero
-	# in the overlap set.
+	# in the overlap set. LEGACY
 	# Normalize the heatmap.
 	# -----------------------------------
 	Overlap.normalize_array(overlap_heatmap)
-	for i in range(N):
-		for j in range(N):
-			if overlap_heatmap[i][j] < parameters["acceptance_threshold"]:
-				overlap_heatmap[i][j] = 0
-	# Overlap.normalize_array(overlap_heatmap)
+	# for i in range(N):
+	# 	for j in range(N):
+	# 		if overlap_heatmap[i][j] < parameters["acceptance_threshold"]:
+	# 			overlap_heatmap[i][j] = 0
 	print("Non-zero elements in overlap: {}".format(np.count_nonzero(overlap_heatmap)))
 
 
@@ -184,8 +183,7 @@ def generate_overlap(Overlap_object):
 			df, 
 			xedges=xedges, 
 			yedges=yedges, 
-			overlap_heatmap=overlap_heatmap,
-			acceptance_threshold=float(parameters["acceptance_threshold"]))
+			overlap_heatmap=overlap_heatmap)
 		
 		n = result["n"]
 		E = result["E"]
