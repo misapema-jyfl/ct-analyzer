@@ -96,8 +96,6 @@ class Overlap(object):
 		heatmap, xedges, yedges = np.histogram2d(x, y, bins=N, range=rng, normed=True)
 		extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
-		heatmap = gaussian_filter(heatmap, sigma=self.parameters["sigma"])
-
 		result = {}
 		result["heatmap"] = self.normalize_array(np.array(heatmap))
 		result["extent"] = extent
@@ -236,6 +234,10 @@ class Overlap(object):
 		elif cbar_type == "binary":
 			cmap = cm.get_cmap("gist_heat", 2)
 
+		# Apply gaussian filter to heatmap if desired
+		if self.parameters["sigma"] > 0:
+			histogram_data = gaussian_filter(histogram_data, sigma=self.parameters["sigma"])
+			histogram_data = self.normalize_array(np.array(histogram_data))
 		img = histogram_data.T
 		ax1 = fig.add_axes([mainx, mainy, mainw, mainh])
 		im = plt.imshow(img, origin="lower",
