@@ -1,14 +1,14 @@
 # Results directory
-results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/10+11+/"
+results_directory: "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/8+11+/"
 
 # Paths to datasets
 # use keys e.g. na-6+, k-9+, etc.
 datasets: {
-"41-k-10+" : "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/10+11+/o-10+11+/solution_set_k10+.csv",
-"41-k-11+" : "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/10+11+/o-10+11+/solution_set_k11+.csv",
+"41-k-8+" : "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/data/o-8+11+/solution_set_k8+.csv",
+"41-k-9+" : "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/data/o-8+11+/solution_set_k9+.csv",
+"41-k-10+" : "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/data/o-8+11+/solution_set_k10+.csv",
+"41-k-11+" : "/home/miha/Work/research/CT_two_species/analysis/JA_2021-09_two_species/2021-09-28_39-K_41-K/overlap_analysis/41-K/using_constrained_data/data/o-8+11+/solution_set_k11+.csv",
 }
-
-
 
 
 # Plotting limits
@@ -20,10 +20,5 @@ limits: {"F":1E-6,
 bins: 200
 
 # Sigma for the Gaussian filtering
-sigma: 0
-
-# Threshold to consider solutions in overlap LEGACY
-# acceptance_threshold: 1E-1
-# acceptance_threshold: 1E-6
-
+sigma: 1
 
