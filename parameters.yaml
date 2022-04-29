@@ -29,23 +29,23 @@ optimize_abc:
   h: 1E-3 # RK4 method stepsize. Units of s.
 
 optimize_nE:
-  do: 0
+  do: 1
   # Available rate coefficient evaluation methods:
   # - 'MB' -> interpolation functions based on a Maxwell-Boltzmann EED
   # For electron density limits, pass the tuple ('cutoff', FREQUENCY)
   # where FREQUENCY is the ion source microwave frequency in units of Hz.
   # The code will then calculate the cutoff frequency and use that
   # as the upper limit.
-  rate_coefficient_method: "MB"
+  rate_coefficient_method: "KAPPA-10"
   number_of_MC_iterations: 10
   number_of_density_iterations: 1000
-  average_energy_limits: [10,9999] # Limits of the average energy of the EED [lower, higher]. Units of eV.
+  average_energy_limits: [10,10000] # Limits of the average energy of the EED [lower, higher]. Units of eV.
   electron_density_limits: [1e11, ['cutoff', 14.5E9]] # Limits of the electron density [lower, higher]. Units of 1/cm3.
-  max_workers: -1 # Use -1 if you want to allow the use of all cpu's
+  max_workers: 6 # Use -1 if you want to allow the use of all cpu's
 
 plotting:
   do: 1
-  heatmap_bins: 200
+  heatmap_bins: 200 # Will create 200x200 grid for the heatmaps.
   sigma: 0
   confidence: 0.341
   average_energy_limits: [10,10000] # Set [lower, upper] limits of (n,E)-plotting.
@@ -53,9 +53,9 @@ plotting:
   penalty_function_upper_limit: 1E-6
   plot_characteristic_minima: 1 
   advanced: # Set everything below this line to 0 by default.
-    skip: # If you want to skip plotting some values.
-      confinement_time: 1
+    skip:   # If you want to skip plotting some values, set value to 1.
+      confinement_time: 0
       charge_exchange_time: 0
-      ionization_time: 1
-    override_charge_states: 1
-    charge_states: [6,7,8,9,10]
+      ionization_time: 0
+    override_charge_states: 0
+    charge_states: []

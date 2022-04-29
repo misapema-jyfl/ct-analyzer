@@ -63,7 +63,7 @@ class OptimizeNE(object):
             "_",
             self.parameters["injected_species"],
             "_",
-            str(charge_state)
+            str(charge_state),
             "+.npy"
             ))
 
