@@ -36,10 +36,11 @@ optimize_nE:
   # where FREQUENCY is the ion source microwave frequency in units of Hz.
   # The code will then calculate the cutoff frequency and use that
   # as the upper limit.
-  rate_coefficient_method: "KAPPA-10"
-  number_of_MC_iterations: 10
-  number_of_density_iterations: 1000
-  average_energy_limits: [10,10000] # Limits of the average energy of the EED [lower, higher]. Units of eV.
+  rate_coefficient_method: "MB"
+  number_of_MC_iterations: 1000
+  # number_of_density_iterations: 1000 # Legacy.
+  number_of_E: 1000
+  average_energy_limits: [10,9999] # Limits of the average energy of the EED [lower, higher]. Units of eV.
   electron_density_limits: [1e11, ['cutoff', 14.5E9]] # Limits of the electron density [lower, higher]. Units of 1/cm3.
   max_workers: 6 # Use -1 if you want to allow the use of all cpu's
 

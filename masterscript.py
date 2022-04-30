@@ -15,7 +15,8 @@ import pandas as pd
 import parameter_tester
 import parse_raw_data
 import optimize_abc
-import optimize_nE
+# import optimize_nE
+import optimize_ne
 import plot_results
 
 
@@ -40,6 +41,7 @@ except:
 if errorCount == 0:
 
 	# Parse the raw data
+	# ------------------
 	if parameters["parse_raw_data"]["do"]:
 		try:
 			print("Parsing raw data...")
@@ -52,6 +54,7 @@ if errorCount == 0:
 			sys.exit()
 
 	# Run the abc optimization
+	# ------------------------
 	if parameters["optimize_abc"]["do"]:
 		try:
 			print("Beginning abc optimization...")
@@ -66,16 +69,21 @@ if errorCount == 0:
 	# Run the (n,E) optimization
 	# ----------------------------
 	if parameters["optimize_nE"]["do"]:
-		try:
-			print("Beginning (n,E)-optimization...")
-			OptNE = optimize_nE.OptimizeNE(parameters)
-			OptNE.doOptimizeNE()
-			print("Finished (n,E)-optimization!\n")
-		except:
-			print("Failed to optimize (n,E).")
-			print("Check parameters / necessary files.")
-			print("Exiting...")
-			sys.exit()
+		# try:
+		# 	print("Beginning (n,E)-optimization...")
+		# 	# OptNE = optimize_nE.OptimizeNE(parameters)
+		# 	OptNE = optimize_ne.OptimizeNE(parameters)
+		# 	OptNE.doOptimizeNE()
+		# 	print("Finished (n,E)-optimization!\n")
+		# except:
+		# 	print("Failed to optimize (n,E).")
+		# 	print("Check parameters / necessary files.")
+		# 	print("Exiting...")
+		# 	sys.exit()
+		print("Beginning (n,E)-optimization...")
+		# OptNE = optimize_nE.OptimizeNE(parameters)
+		OptNE = optimize_ne.OptimizeNE(parameters)
+		OptNE.doOptimizeNE()
 	# ----------------------------
 
 
