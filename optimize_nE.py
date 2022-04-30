@@ -1,12 +1,14 @@
 """
-Particle densities in units of 1/cm3.
-Energies in units of eV.
+The code expects rate coefficient interpolation functions in units of m3/s.
+
+Output particle densities in units of 1/cm3. Energies in units of eV.
 """
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
 import multiprocessing
 import sys
+from os import path
 
 class OptimizeNE(object):
     """docstring for Optimizer"""
@@ -44,23 +46,39 @@ class OptimizeNE(object):
         TODO! Voronov formula (?) 
         """
 
-        # If the chosen EED is MB, use the interpolation functions.
-        if self.parameters["optimize_nE"]["rate_coefficient_method"] == "MB":
-            # Find the interpolation functions within the
-            # rate coefficient data directory
-            s = (self.parameters["working_directory"],
-                "rate_coefficient_data/",
-                self.parameters["injected_species"],
-                "/MB_",
-                self.parameters["injected_species"],
-                "_",
-                str(charge_state),
-                "+.npy")
-            path = "".join(s)
-            # Load the interpolation function
-            f = np.load(path, allow_pickle=True).item()
+        # Find the interpolation functions within the
+        # rate coefficient data directory
             
-            return f
+        s1 = "".join(
+            (
+            self.parameters["working_directory"],
+            "rate_coefficient_data/",
+            self.parameters["injected_species"],
+            "/"
+            )) 
+
+        s2 = "".join(
+            (
+            self.parameters["optimize_nE"]["rate_coefficient_method"].upper(),
+            "_",
+            self.parameters["injected_species"],
+            "_",
+            str(charge_state),
+            "+.npy"
+            ))
+
+        fpath = "".join((s1, s2))
+        if not path.exists(fpath):
+            print("Couldn't find file {}".format(fpath))
+            print("Exiting...")
+            sys.exit()
+
+        
+
+        # Load the interpolation function
+        f = np.load(fpath, allow_pickle=True).item()
+        
+        return f
 
 
 
@@ -85,8 +103,8 @@ class OptimizeNE(object):
             self.parameters["injected_species"],
             ".csv"
             )
-        path = "".join(s)
-        df = pd.read_csv(path)
+        fpath = "".join(s)
+        df = pd.read_csv(fpath)
         for charge_state in self.parameters["measured_charge_states"]:
             c = (df["state"]==charge_state)
             uncertainty = df[c]["UNC"].values[0]
@@ -108,8 +126,8 @@ class OptimizeNE(object):
         df = pd.DataFrame(self.bias_dict)
         s = (self.parameters["results_directory"],
             "biases.csv")
-        path = "".join(s)
-        df.to_csv(path)
+        fpath = "".join(s)
+        df.to_csv(fpath)
 
 
     def rate_coefficient(self, charge_state, average_energy):
@@ -442,8 +460,8 @@ class OptimizeNE(object):
                 self.parameters["injected_species"],
                 str(charge_state)
                 )
-            path = self.parameters["results_directory"] + name
-            output.to_csv(path)
+            fpath = self.parameters["results_directory"] + name
+            output.to_csv(fpath)
 
 
 

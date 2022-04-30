@@ -238,6 +238,7 @@ class Overlap(object):
 		if self.parameters["sigma"] > 0:
 			histogram_data = gaussian_filter(histogram_data, sigma=self.parameters["sigma"])
 			histogram_data = self.normalize_array(np.array(histogram_data))
+			
 		img = histogram_data.T
 		ax1 = fig.add_axes([mainx, mainy, mainw, mainh])
 		im = plt.imshow(img, origin="lower",
