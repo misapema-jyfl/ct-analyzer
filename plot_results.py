@@ -627,8 +627,12 @@ class Plotting(object):
                 lo_errs.append(lo_err)
                 hi_errs.append(hi_err)
                 medians.append(median)
-                minimums.append(min(data))
-                maximums.append(max(data))
+                if not len(data) == 0:
+                    minimums.append(min(data))
+                    maximums.append(max(data))
+                else: 
+                    minimums.append(np.nan)
+                    maximums.append(np.nan)
 
             # Plot the data
             ax.errorbar(
