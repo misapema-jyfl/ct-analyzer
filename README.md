@@ -2,11 +2,17 @@
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
-### What is this repository for? ###
+# popTauPy
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+A numerical code for determining plasma characteristic values from 
+short pulse mode 1+ injection induced extraction current transients
+in a CB-ECRIS.
+
+## Compatibility
+
+This code has been developed and tested on Linux Ubuntu (20.04). 
+It is known that the code is currently incompatible with Windows OS.
+Sorry for the inconvenience. Use Linux.
 
 ### How do I get set up? ###
 
@@ -17,23 +23,14 @@ This README would normally document whatever steps are necessary to get your app
 * How to run tests
 * Deployment instructions
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
-
 # Running the code #
 
-### Run the ct-analyzer ### 
+More detailed instructions to be given.
 
-    python3 masterscript parameters.yaml
+## ct-analyzer
 
-### Determine overlaps between solution sets ###
+`python3 masterScript.py parameters.yaml`
 
-    python3 calculate_overlap.py overlap_parameters.yaml
+## overlap of solution sets
+
+`python3 calculate_overlap.py overlap_parameters.yaml`
